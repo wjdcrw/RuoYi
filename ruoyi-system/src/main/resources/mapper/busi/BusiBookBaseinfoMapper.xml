@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.busi.mapper.BusiBookBaseinfoMapper">
+    
+    <resultMap type="BusiBookBaseinfo" id="BusiBookBaseinfoResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="author"    column="author"    />
+        <result property="bookType"    column="bookType"    />
+        <result property="ISBN"    column="ISBN"    />
+        <result property="publisher"    column="publisher"    />
+        <result property="publishTime"    column="publishTime"    />
+        <result property="createTime"    column="createTime"    />
+        <result property="updateTime"    column="updateTime"    />
+    </resultMap>
+
+    <sql id="selectBusiBookBaseinfoVo">
+        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime from busi_book_baseinfo
+    </sql>
+
+    <select id="selectBusiBookBaseinfoList" parameterType="BusiBookBaseinfo" resultMap="BusiBookBaseinfoResult">
+        <include refid="selectBusiBookBaseinfoVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="author != null  and author != ''"> and author = #{author}</if>
+            <if test="bookType != null "> and bookType = #{bookType}</if>
+            <if test="ISBN != null  and ISBN != ''"> and ISBN = #{ISBN}</if>
+            <if test="publisher != null  and publisher != ''"> and publisher = #{publisher}</if>
+            <if test="publishTime != null "> and publishTime = #{publishTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusiBookBaseinfoById" parameterType="Long" resultMap="BusiBookBaseinfoResult">
+        <include refid="selectBusiBookBaseinfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBusiBookBaseinfo" parameterType="BusiBookBaseinfo" useGeneratedKeys="true" keyProperty="id">
+        insert into busi_book_baseinfo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="author != null and author != ''">author,</if>
+            <if test="bookType != null">bookType,</if>
+            <if test="ISBN != null and ISBN != ''">ISBN,</if>
+            <if test="publisher != null">publisher,</if>
+            <if test="publishTime != null">publishTime,</if>
+            <if test="createTime != null">createTime,</if>
+            <if test="updateTime != null">updateTime,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="author != null and author != ''">#{author},</if>
+            <if test="bookType != null">#{bookType},</if>
+            <if test="ISBN != null and ISBN != ''">#{ISBN},</if>
+            <if test="publisher != null">#{publisher},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="createTime != null">sysdate(),</if>
+            <if test="updateTime != null">sysdate(),</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusiBookBaseinfo" parameterType="BusiBookBaseinfo">
+        update busi_book_baseinfo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="author != null and author != ''">author = #{author},</if>
+            <if test="bookType != null">bookType = #{bookType},</if>
+            <if test="ISBN != null and ISBN != ''">ISBN = #{ISBN},</if>
+            <if test="publisher != null">publisher = #{publisher},</if>
+            <if test="publishTime != null">publishTime = #{publishTime},</if>
+            <if test="updateTime != null">updateTime = sysdate(),</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusiBookBaseinfoById" parameterType="Long">
+        delete from busi_book_baseinfo where id = #{id}
+    </delete>
+
+    <delete id="deleteBusiBookBaseinfoByIds" parameterType="String">
+        delete from busi_book_baseinfo where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
