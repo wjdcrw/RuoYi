@@ -1,7 +1,8 @@
 package com.ruoyi.busi.service;
 
-import java.util.List;
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
+
+import java.util.List;
 
 /**
  * 图书类型Service接口
@@ -58,4 +59,6 @@ public interface IBusiBookBaseinfoService
      * @return 结果
      */
     public int deleteBusiBookBaseinfoById(Long id);
+
+
 }

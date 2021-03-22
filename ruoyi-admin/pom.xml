@@ -16,6 +16,11 @@
     </description>
 
     <dependencies>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>ruoyi-busi</artifactId>
+            <version>4.6.0</version>
+        </dependency>
 
         <!-- SpringBoot集成thymeleaf模板 -->
         <dependency>

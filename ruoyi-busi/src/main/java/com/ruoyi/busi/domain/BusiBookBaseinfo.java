@@ -8,10 +8,10 @@ import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
- * 图书类型对象 busi_book_baseinfo
+ * 图书管理对象 busi_book_baseinfo
  * 
  * @author ruoyi
- * @date 2021-03-19
+ * @date 2021-03-22
  */
 public class BusiBookBaseinfo extends BaseEntity
 {
@@ -44,6 +44,16 @@ public class BusiBookBaseinfo extends BaseEntity
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "出版日期", width = 30, dateFormat = "yyyy-MM-dd")
     private Date publishTime;
+
+    /** 价格 */
+    private Long price;
+
+    /** 状态：0-闲置 1-预借 2-借出 */
+    @Excel(name = "状态：0-闲置 1-预借 2-借出")
+    private Integer state;
+
+    /** 简介 */
+    private String introduce;
 
     public void setId(Long id) 
     {
@@ -108,6 +118,33 @@ public class BusiBookBaseinfo extends BaseEntity
     {
         return publishTime;
     }
+    public void setPrice(Long price) 
+    {
+        this.price = price;
+    }
+
+    public Long getPrice() 
+    {
+        return price;
+    }
+    public void setState(Integer state) 
+    {
+        this.state = state;
+    }
+
+    public Integer getState() 
+    {
+        return state;
+    }
+    public void setIntroduce(String introduce) 
+    {
+        this.introduce = introduce;
+    }
+
+    public String getIntroduce() 
+    {
+        return introduce;
+    }
 
     @Override
     public String toString() {
@@ -121,6 +158,9 @@ public class BusiBookBaseinfo extends BaseEntity
             .append("publishTime", getPublishTime())
             .append("createTime", getCreateTime())
             .append("updateTime", getUpdateTime())
+            .append("price", getPrice())
+            .append("state", getState())
+            .append("introduce", getIntroduce())
             .toString();
     }
 }
