@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +56,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @DataScope(deptAlias = "d")
     public List<SysRole> selectRoleList(SysRole role)
     {
-        return roleMapper.selectRoleList(role);
+        return security(roleMapper.selectRoleList(role));
     }
 
     /**
@@ -389,4 +391,35 @@ public class SysRoleServiceImpl implements ISysRoleService
         }
         return userRoleMapper.batchUserRole(list);
     }
+
+    /**
+     * 非超级管理员不可查看超级管理员
+     * @return
+     */
+    private List<SysRole> security(List<SysRole> sysRoles){
+        if(sysRoles!=null&&!hasAdmin()){
+            for(SysRole sysRole:sysRoles){
+                if("admin".equals(sysRole.getRoleKey())){
+                    sysRoles.remove(sysRole);
+                    break;
+                }
+            }
+        }
+        return sysRoles;
+    }
+    private SysRole security(SysRole sysRole){
+        if(!hasAdmin()){
+            return null;
+        }
+        return sysRole;
+    }
+
+    /**
+     * 判断当前用户是否有超级管理员权限
+     * @return
+     */
+    private boolean hasAdmin(){
+        return SecurityUtils.getSubject().hasRole("admin");
+    }
+
 }

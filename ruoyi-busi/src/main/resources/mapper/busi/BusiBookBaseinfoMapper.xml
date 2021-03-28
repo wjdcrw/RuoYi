@@ -17,7 +17,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBusiBookBaseinfoVo">
-        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime from busi_book_baseinfo
+        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime,state,price from busi_book_baseinfo
     </sql>
 
     <select id="selectBusiBookBaseinfoList" parameterType="BusiBookBaseinfo" resultMap="BusiBookBaseinfoResult">
@@ -71,6 +71,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="publisher != null">publisher = #{publisher},</if>
             <if test="publishTime != null">publishTime = #{publishTime},</if>
             <if test="updateTime != null">updateTime = sysdate(),</if>
+            <if test="state != null">state = #{state}, </if>
         </trim>
         where id = #{id}
     </update>

@@ -1,78 +1,94 @@
 package com.ruoyi.busi.service.impl;
 
-import com.ruoyi.busi.domain.BusiBookBaseinfo;
-import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
-import com.ruoyi.busi.service.IBusiBookBorrowService;
-import com.ruoyi.common.utils.ShiroUtils;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.ruoyi.busi.mapper.BusiBookBorrowMapper;
+import com.ruoyi.busi.domain.BusiBookBorrow;
+import com.ruoyi.busi.service.IBusiBookBorrowService;
+import com.ruoyi.common.core.text.Convert;
 
+/**
+ * 借阅查询Service业务层处理
+ * 
+ * @author ruoyi
+ * @date 2021-03-29
+ */
 @Service
-public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService {
+public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService 
+{
     @Autowired
-    private BusiBookBaseinfoMapper busiBookBaseinfoMapper;
-    @Override
-    public int preBorrowBookById(Long bookId) {
-        //当前用户id
-        Long userId = ShiroUtils.getUserId();
-        //查询当前用户可预借
+    private BusiBookBorrowMapper busiBookBorrowMapper;
 
-        //
-        return 0;
-    }
-
+    /**
+     * 查询借阅查询
+     * 
+     * @param id 借阅查询ID
+     * @return 借阅查询
+     */
     @Override
-    public int borrowBookById(Long id) {
-        return 0;
-    }
-
-    @Override
-    public int returnBookById(Long id) {
-        return 0;
-    }
-
-    @Override
-    public boolean canPreBorrow(Long bookId, Long userId) throws Exception{
-        return false;
-    }
-
-    @Override
-    public boolean canBorrow(Long bookId, Long userId) throws Exception{
-        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(bookId);
-        busiBookBaseinfo.getState();
-        if(busiBookBaseinfo.getState()!=0){
-            throw new Exception("");
-        }
-        return false;
+    public BusiBookBorrow selectBusiBookBorrowById(Long id)
+    {
+        return busiBookBorrowMapper.selectBusiBookBorrowById(id);
     }
 
     /**
-     * 查询图书是否被占用(预借或借取)
-     * @param bookId
-     * @return
+     * 查询借阅查询列表
+     * 
+     * @param busiBookBorrow 借阅查询
+     * @return 借阅查询
      */
-    private boolean isFree(Long bookId){
-        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(bookId);
-        busiBookBaseinfo.getState();
-        return busiBookBaseinfo.getState()==0;
+    @Override
+    public List<BusiBookBorrow> selectBusiBookBorrowList(BusiBookBorrow busiBookBorrow)
+    {
+        return busiBookBorrowMapper.selectBusiBookBorrowList(busiBookBorrow);
     }
 
     /**
-     * 查询用户借取数量是否已满
-     * @param bookId
-     * @return
+     * 新增借阅查询
+     * 
+     * @param busiBookBorrow 借阅查询
+     * @return 结果
      */
-    private boolean isBorrowFull(Long bookId){
-        return false;
+    @Override
+    public int insertBusiBookBorrow(BusiBookBorrow busiBookBorrow)
+    {
+        return busiBookBorrowMapper.insertBusiBookBorrow(busiBookBorrow);
     }
 
     /**
-     * 查询用户预借数量是否已满
-     * @param bookId
-     * @return
+     * 修改借阅查询
+     * 
+     * @param busiBookBorrow 借阅查询
+     * @return 结果
      */
-    private boolean isPreBorrowFull(Long bookId){
-        return false;
+    @Override
+    public int updateBusiBookBorrow(BusiBookBorrow busiBookBorrow)
+    {
+        return busiBookBorrowMapper.updateBusiBookBorrow(busiBookBorrow);
     }
 
+    /**
+     * 删除借阅查询对象
+     * 
+     * @param ids 需要删除的数据ID
+     * @return 结果
+     */
+    @Override
+    public int deleteBusiBookBorrowByIds(String ids)
+    {
+        return busiBookBorrowMapper.deleteBusiBookBorrowByIds(Convert.toStrArray(ids));
+    }
+
+    /**
+     * 删除借阅查询信息
+     * 
+     * @param id 借阅查询ID
+     * @return 结果
+     */
+    @Override
+    public int deleteBusiBookBorrowById(Long id)
+    {
+        return busiBookBorrowMapper.deleteBusiBookBorrowById(id);
+    }
 }

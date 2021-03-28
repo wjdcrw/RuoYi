@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.busi.mapper.BusiBookPreborrowMapper">
+    
+    <resultMap type="BusiBookPreborrow" id="BusiBookPreborrowResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="userId"    />
+        <result property="bookId"    column="bookId"    />
+        <result property="createTime"    column="createTime"    />
+        <result property="finishTime"    column="finishTime"    />
+        <result property="state"    column="state"    />
+    </resultMap>
+
+    <sql id="selectBusiBookPreborrowVo">
+        select id, userId, bookId, createTime, finishTime, state from busi_book_preBorrow
+    </sql>
+
+    <select id="selectBusiBookPreborrowList" parameterType="BusiBookPreborrow" resultMap="BusiBookPreborrowResult">
+        <include refid="selectBusiBookPreborrowVo"/>
+        <where>  
+            <if test="state != null "> and state = #{state}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusiBookPreborrowById" parameterType="Long" resultMap="BusiBookPreborrowResult">
+        <include refid="selectBusiBookPreborrowVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBusiBookPreborrow" parameterType="BusiBookPreborrow" useGeneratedKeys="true" keyProperty="id">
+        insert into busi_book_preBorrow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">userId,</if>
+            <if test="bookId != null and bookId != ''">bookId,</if>
+            <if test="createTime != null">createTime,</if>
+            <if test="finishTime != null">finishTime,</if>
+            <if test="state != null">state,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="bookId != null and bookId != ''">#{bookId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="finishTime != null">#{finishTime},</if>
+            <if test="state != null">#{state},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusiBookPreborrow" parameterType="BusiBookPreborrow">
+        update busi_book_preBorrow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="bookId != null and bookId != ''">bookId = #{bookId},</if>
+            <if test="createTime != null">createTime = #{createTime},</if>
+            <if test="finishTime != null">finishTime = #{finishTime},</if>
+            <if test="state != null">state = #{state},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusiBookPreborrowById" parameterType="Long">
+        delete from busi_book_preBorrow where id = #{id}
+    </delete>
+
+    <delete id="deleteBusiBookPreborrowByIds" parameterType="String">
+        delete from busi_book_preBorrow where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

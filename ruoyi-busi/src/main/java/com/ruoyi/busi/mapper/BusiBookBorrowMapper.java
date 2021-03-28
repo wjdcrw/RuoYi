@@ -1,15 +1,15 @@
-package com.ruoyi.busi.service;
+package com.ruoyi.busi.mapper;
 
 import java.util.List;
 import com.ruoyi.busi.domain.BusiBookBorrow;
 
 /**
- * 借阅查询Service接口
+ * 借阅查询Mapper接口
  * 
  * @author ruoyi
  * @date 2021-03-29
  */
-public interface IBusiBookBorrowService 
+public interface BusiBookBorrowMapper 
 {
     /**
      * 查询借阅查询
@@ -44,18 +44,18 @@ public interface IBusiBookBorrowService
     public int updateBusiBookBorrow(BusiBookBorrow busiBookBorrow);
 
     /**
-     * 批量删除借阅查询
-     * 
-     * @param ids 需要删除的数据ID
-     * @return 结果
-     */
-    public int deleteBusiBookBorrowByIds(String ids);
-
-    /**
-     * 删除借阅查询信息
+     * 删除借阅查询
      * 
      * @param id 借阅查询ID
      * @return 结果
      */
     public int deleteBusiBookBorrowById(Long id);
+
+    /**
+     * 批量删除借阅查询
+     * 
+     * @param ids 需要删除的数据ID
+     * @return 结果
+     */
+    public int deleteBusiBookBorrowByIds(String[] ids);
 }

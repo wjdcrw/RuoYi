@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.busi.mapper.BusiBookBorrowMapper">
+    
+    <resultMap type="BusiBookBorrow" id="BusiBookBorrowResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="userId"    />
+        <result property="bookId"    column="bookId"    />
+        <result property="borrowDate"    column="borrowDate"    />
+        <result property="borrowPeriod"    column="borrowPeriod"    />
+        <result property="returnDate"    column="returnDate"    />
+        <result property="state"    column="state"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBusiBookBorrowVo">
+        select id, userId, bookId, borrowDate, borrowPeriod, returnDate, state, remark from busi_book_borrow
+    </sql>
+
+    <select id="selectBusiBookBorrowList" parameterType="BusiBookBorrow" resultMap="BusiBookBorrowResult">
+        <include refid="selectBusiBookBorrowVo"/>
+        <where>  
+            <if test="userId != null "> and userId = #{userId}</if>
+            <if test="bookId != null "> and bookId = #{bookId}</if>
+            <if test="borrowDate != null "> and borrowDate = #{borrowDate}</if>
+            <if test="state != null "> and state = #{state}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusiBookBorrowById" parameterType="Long" resultMap="BusiBookBorrowResult">
+        <include refid="selectBusiBookBorrowVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBusiBookBorrow" parameterType="BusiBookBorrow" useGeneratedKeys="true" keyProperty="id">
+        insert into busi_book_borrow
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">userId,</if>
+            <if test="bookId != null">bookId,</if>
+            <if test="borrowDate != null">borrowDate,</if>
+            <if test="borrowPeriod != null">borrowPeriod,</if>
+            <if test="returnDate != null">returnDate,</if>
+            <if test="state != null">state,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="bookId != null">#{bookId},</if>
+            <if test="borrowDate != null">#{borrowDate},</if>
+            <if test="borrowPeriod != null">#{borrowPeriod},</if>
+            <if test="returnDate != null">#{returnDate},</if>
+            <if test="state != null">#{state},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusiBookBorrow" parameterType="BusiBookBorrow">
+        update busi_book_borrow
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="bookId != null">bookId = #{bookId},</if>
+            <if test="borrowDate != null">borrowDate = #{borrowDate},</if>
+            <if test="borrowPeriod != null">borrowPeriod = #{borrowPeriod},</if>
+            <if test="returnDate != null">returnDate = #{returnDate},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusiBookBorrowById" parameterType="Long">
+        delete from busi_book_borrow where id = #{id}
+    </delete>
+
+    <delete id="deleteBusiBookBorrowByIds" parameterType="String">
+        delete from busi_book_borrow where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>
