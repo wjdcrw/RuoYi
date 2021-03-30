@@ -21,12 +21,17 @@ public class BusiBookPreborrow extends BaseEntity
     private Long id;
 
     /** 图书id */
-    @Excel(name = "图书id")
+    @Excel(name = "用户编号")
     private Long userId;
 
+    private String userName;
+
+    private String userLoginName;
     /** 用户id */
-    @Excel(name = "用户id")
+    @Excel(name = "图书编号")
     private Long bookId;
+
+    private String bookName;
 
     /** 完成时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
@@ -81,6 +86,33 @@ public class BusiBookPreborrow extends BaseEntity
     public Integer getState() 
     {
         return state;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public BusiBookPreborrow setUserName(String userName) {
+        this.userName = userName;
+        return this;
+    }
+
+    public String getUserLoginName() {
+        return userLoginName;
+    }
+
+    public BusiBookPreborrow setUserLoginName(String userLoginName) {
+        this.userLoginName = userLoginName;
+        return this;
+    }
+
+    public String getBookName() {
+        return bookName;
+    }
+
+    public BusiBookPreborrow setBookName(String bookName) {
+        this.bookName = bookName;
+        return this;
     }
 
     @Override

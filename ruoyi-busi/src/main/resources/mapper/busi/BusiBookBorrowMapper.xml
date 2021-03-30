@@ -13,10 +13,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="returnDate"    column="returnDate"    />
         <result property="state"    column="state"    />
         <result property="remark"    column="remark"    />
+        <result property="userLoginName" column="userLoginName"/>
+        <result property="userName" column="userName"/>
+        <result property="bookName" column="bookName"/>
     </resultMap>
 
     <sql id="selectBusiBookBorrowVo">
-        select id, userId, bookId, borrowDate, borrowPeriod, returnDate, state, remark from busi_book_borrow
+--         select id, userId, bookId, borrowDate, borrowPeriod, returnDate, state, remark from busi_book_borrow
+        select p.id, p.userId, p.bookId, p.borrowDate, p.borrowPeriod, p.returnDate,p.state,p.remark,u.login_name userLoginName,
+        u.user_name userName,b.name bookName from busi_book_borrow p,busi_book_baseinfo b,sys_user u
+        where p.userId=u.user_id and p.bookId=b.id
     </sql>
 
     <select id="selectBusiBookBorrowList" parameterType="BusiBookBorrow" resultMap="BusiBookBorrowResult">

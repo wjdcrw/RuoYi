@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.busi.mapper.BusiBillMapper">
+    
+    <resultMap type="BusiBill" id="BusiBillResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="userId"    />
+        <result property="bookId"    column="bookId"    />
+        <result property="money"    column="money"    />
+        <result property="preId"    column="preId"    />
+        <result property="billType"    column="billType"    />
+        <result property="billSign"    column="billSign"    />
+        <result property="createTime"    column="createTime"    />
+        <result property="remark"    column="remark"    />
+        <result property="parentId"    column="parentId"    />
+    </resultMap>
+
+    <sql id="selectBusiBillVo">
+        select id, userId, bookId, money, preId, billType, billSign, createTime, remark, parentId from busi_bill
+    </sql>
+
+    <select id="selectBusiBillList" parameterType="BusiBill" resultMap="BusiBillResult">
+        <include refid="selectBusiBillVo"/>
+        <where>  
+            <if test="bookId != null "> and bookId = #{bookId}</if>
+            <if test="money != null "> and money = #{money}</if>
+            <if test="preId != null "> and preId = #{preId}</if>
+            <if test="billType != null "> and billType = #{billType}</if>
+            <if test="billSign != null "> and billSign = #{billSign}</if>
+            <if test="createTime != null "> and createTime = #{createTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusiBillById" parameterType="Long" resultMap="BusiBillResult">
+        <include refid="selectBusiBillVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBusiBill" parameterType="BusiBill" useGeneratedKeys="true" keyProperty="id">
+        insert into busi_bill
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">userId,</if>
+            <if test="bookId != null">bookId,</if>
+            <if test="money != null">money,</if>
+            <if test="preId != null">preId,</if>
+            <if test="billType != null">billType,</if>
+            <if test="billSign != null">billSign,</if>
+            <if test="createTime != null">createTime,</if>
+            <if test="remark != null">remark,</if>
+            <if test="parentId != null">parentId,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="bookId != null">#{bookId},</if>
+            <if test="money != null">#{money},</if>
+            <if test="preId != null">#{preId},</if>
+            <if test="billType != null">#{billType},</if>
+            <if test="billSign != null">#{billSign},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="parentId != null">#{parentId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusiBill" parameterType="BusiBill">
+        update busi_bill
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">userId = #{userId},</if>
+            <if test="bookId != null">bookId = #{bookId},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="preId != null">preId = #{preId},</if>
+            <if test="billType != null">billType = #{billType},</if>
+            <if test="billSign != null">billSign = #{billSign},</if>
+            <if test="createTime != null">createTime = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="parentId != null">parentId = #{parentId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusiBillById" parameterType="Long">
+        delete from busi_bill where id = #{id}
+    </delete>
+
+    <delete id="deleteBusiBillByIds" parameterType="String">
+        delete from busi_bill where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

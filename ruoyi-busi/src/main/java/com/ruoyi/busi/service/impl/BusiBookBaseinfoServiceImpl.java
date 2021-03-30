@@ -1,7 +1,9 @@
 package com.ruoyi.busi.service.impl;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
+import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
+import com.ruoyi.busi.mapper.BusiBookPreborrowMapper;
 import com.ruoyi.busi.service.IBusiBookBaseinfoService;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.DateUtils;
@@ -21,6 +23,8 @@ public class BusiBookBaseinfoServiceImpl implements IBusiBookBaseinfoService
 {
     @Autowired
     private BusiBookBaseinfoMapper busiBookBaseinfoMapper;
+    @Autowired
+    private BusiBookPreborrowMapper busiBookPreborrowMapper;
 
     /**
      * 查询图书类型
@@ -97,5 +101,16 @@ public class BusiBookBaseinfoServiceImpl implements IBusiBookBaseinfoService
     }
 
 
-
+    /*public Result deleteBusiBookBaseinfoById(Long id){
+        Result result=new Result();
+        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(id);
+        if(busiBookBaseinfo.getState()!=0){
+            result.setState(Result.FAIL);
+            result.setMessage("此图书处于预借或借阅状态，不可删除！！！");
+            return result;
+        }
+        busiBookBaseinfoMapper.deleteBusiBookBaseinfoById(id);
+        result.setState(Result.SUCCESS);
+        return result;
+    }*/
 }

@@ -41,6 +41,13 @@ public class BusiBookBaseinfoController extends BaseController
         return prefix + "/bookbaseinfo";
     }
 
+   /* @RequiresPermissions("busi:bookselect:view")
+    @GetMapping()
+    public String bookselect()
+    {
+        return prefix + "/bookselect";
+    }
+*/
     /**
      * 查询图书管理列表
      */

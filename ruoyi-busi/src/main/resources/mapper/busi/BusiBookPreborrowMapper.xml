@@ -11,10 +11,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime"    column="createTime"    />
         <result property="finishTime"    column="finishTime"    />
         <result property="state"    column="state"    />
+        <result property="userLoginName" column="userLoginName"/>
+        <result property="userName" column="userName"/>
+        <result property="bookName" column="bookName"/>
     </resultMap>
 
     <sql id="selectBusiBookPreborrowVo">
-        select id, userId, bookId, createTime, finishTime, state from busi_book_preBorrow
+--         select id, userId, bookId, createTime, finishTime, state from busi_book_preBorrow
+        select p.id, p.userId, p.bookId, p.createTime, p.finishTime, p.state,u.login_name userLoginName,
+        u.user_name userName,b.name bookName from busi_book_preBorrow p,busi_book_baseinfo b,sys_user u
+        where p.userId=u.user_id and p.bookId=b.id
     </sql>
 
     <select id="selectBusiBookPreborrowList" parameterType="BusiBookPreborrow" resultMap="BusiBookPreborrowResult">

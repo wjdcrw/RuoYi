@@ -1,8 +1,11 @@
 package com.ruoyi.busi.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
+import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,14 +65,44 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     public int insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow)
     {
         BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookPreborrow.getBookId());
+        //若图书状态不为空闲，预约失败
         if(busiBookBaseinfo.getState()!=0){
             return 0;
         }
+        //检查读者当前预约数
+        if(currentPreBorrowNum(busiBookPreborrow.getUserId())>0){
+            return 0;
+        }
+        //检查读者当前押金
         busiBookBaseinfo.setState(1);
         busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);
         return busiBookPreborrowMapper.insertBusiBookPreborrow(busiBookPreborrow);
     }
 
+    /*public Result insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow)
+    {
+        Result result=new Result();
+        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookPreborrow.getBookId());
+        //若图书状态不为空闲，预约失败
+        if(busiBookBaseinfo.getState()!=0){
+            result.setState(Result.FAIL);
+            result.setMessage("请选择图书状态为空闲的图书！！！");
+            return result;
+        }
+        //检查读者当前预约数
+        if(currentPreBorrowNum(busiBookPreborrow.getUserId())>0){
+            result.setState(Result.FAIL);
+            result.setMessage("您最多只可预约一本图书！！！");
+            return result;
+        }
+        busiBookBaseinfo.setState(1);
+        //更新图书状态
+        busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);
+        //添加预约书籍
+        busiBookPreborrowMapper.insertBusiBookPreborrow(busiBookPreborrow);
+        result.setState(Result.SUCCESS);
+        return result;
+    }*/
     /**
      * 修改预约查询
      * 
@@ -104,5 +137,9 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     public int deleteBusiBookPreborrowById(Long id)
     {
         return busiBookPreborrowMapper.deleteBusiBookPreborrowById(id);
+    }
+
+    public int currentPreBorrowNum(Long userId){
+        return 0;
     }
 }
