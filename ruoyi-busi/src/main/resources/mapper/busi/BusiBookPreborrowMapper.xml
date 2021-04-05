@@ -20,19 +20,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 --         select id, userId, bookId, createTime, finishTime, state from busi_book_preBorrow
         select p.id, p.userId, p.bookId, p.createTime, p.finishTime, p.state,u.login_name userLoginName,
         u.user_name userName,b.name bookName from busi_book_preBorrow p,busi_book_baseinfo b,sys_user u
-        where p.userId=u.user_id and p.bookId=b.id
+        where p.userId=u.user_id and p.bookId=b.id and and p.state!=3
     </sql>
 
     <select id="selectBusiBookPreborrowList" parameterType="BusiBookPreborrow" resultMap="BusiBookPreborrowResult">
         <include refid="selectBusiBookPreborrowVo"/>
-        <where>  
-            <if test="state != null "> and state = #{state}</if>
-        </where>
+        <if test="userLoginName != null and userLoginName!=''"> and u.login_name = #{userLoginName}</if>
+        <if test="bookId != null "> and p.bookId = #{bookId}</if>
+        <if test="bookName != null and bookName!=''"> and b.name = #{bookName}</if>
+        <if test="state != null "> and p.state = #{state}</if>
     </select>
-    
+    <select id="selectBusiBookPreborrowOverTimerList" parameterType="BusiBookPreborrow" resultMap="BusiBookPreborrowResult">
+        select id,userId,bookId,createTime from busi_book_preBorrow where state=0 and NOW()>DATE_ADD(createTime,INTERVAL 1 DAY)
+    </select>
     <select id="selectBusiBookPreborrowById" parameterType="Long" resultMap="BusiBookPreborrowResult">
         <include refid="selectBusiBookPreborrowVo"/>
-        where id = #{id}
+         and p.id=#{id}
     </select>
         
     <insert id="insertBusiBookPreborrow" parameterType="BusiBookPreborrow" useGeneratedKeys="true" keyProperty="id">
@@ -62,9 +65,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="finishTime != null">finishTime = #{finishTime},</if>
             <if test="state != null">state = #{state},</if>
         </trim>
-        where id = #{id}
+        where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
     </update>
-
+    <update id="updateBusiBookPreborrowState" parameterType="Long">
+        update busi_book_preBorrow
+        set state=#{state}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
     <delete id="deleteBusiBookPreborrowById" parameterType="Long">
         delete from busi_book_preBorrow where id = #{id}
     </delete>

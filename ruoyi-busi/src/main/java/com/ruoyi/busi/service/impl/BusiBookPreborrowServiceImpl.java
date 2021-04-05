@@ -1,5 +1,6 @@
 package com.ruoyi.busi.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,6 +128,12 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
         return busiBookPreborrowMapper.deleteBusiBookPreborrowByIds(Convert.toStrArray(ids));
     }
 
+    @Override
+    public int cancle(BusiBookPreborrow busiBookPreborrow) {
+        busiBookPreborrow.setState(3);
+        return busiBookPreborrowMapper.updateBusiBookPreborrow(busiBookPreborrow);
+    }
+
     /**
      * 删除预约查询信息
      * 
@@ -137,6 +144,22 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     public int deleteBusiBookPreborrowById(Long id)
     {
         return busiBookPreborrowMapper.deleteBusiBookPreborrowById(id);
+    }
+
+    @Override
+    @Transactional
+    public void preBorrowOverTimer() {
+        List<BusiBookPreborrow> busiBookPreborrows = busiBookPreborrowMapper.selectBusiBookPreborrowOverTimerList();
+        List<Long> bookids=new ArrayList<>();
+        List<Long> preBorrowIds=new ArrayList<>();
+        for(BusiBookPreborrow _busiBookPreborrow:busiBookPreborrows){
+            bookids.add(_busiBookPreborrow.getBookId());
+            preBorrowIds.add(_busiBookPreborrow.getId());
+        }
+        if(busiBookPreborrows.size()>0){
+            busiBookBaseinfoMapper.updateBusiBookBaseinfoState(bookids,0);
+            busiBookPreborrowMapper.updateBusiBookPreborrowState(preBorrowIds,2);
+        }
     }
 
     public int currentPreBorrowNum(Long userId){

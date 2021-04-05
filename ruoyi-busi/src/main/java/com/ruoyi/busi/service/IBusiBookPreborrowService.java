@@ -52,10 +52,22 @@ public interface IBusiBookPreborrowService
     public int deleteBusiBookPreborrowByIds(String ids);
 
     /**
+     * 取消预约
+     * @param busiBookPreborrow
+     * @return
+     */
+    public int cancle(BusiBookPreborrow busiBookPreborrow);
+
+    /**
      * 删除预约查询信息
      * 
      * @param id 预约查询ID
      * @return 结果
      */
     public int deleteBusiBookPreborrowById(Long id);
+
+    /**
+     * 处理超时的预约
+     */
+    public void preBorrowOverTimer();
 }

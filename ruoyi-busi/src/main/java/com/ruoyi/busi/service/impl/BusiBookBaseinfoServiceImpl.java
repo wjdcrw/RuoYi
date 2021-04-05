@@ -100,6 +100,11 @@ public class BusiBookBaseinfoServiceImpl implements IBusiBookBaseinfoService
         return busiBookBaseinfoMapper.deleteBusiBookBaseinfoById(id);
     }
 
+    @Override
+    public int updateBusiBookBaseinfoState(List<Long> ids, int state) {
+        return busiBookBaseinfoMapper.updateBusiBookBaseinfoState(ids,state);
+    }
+
 
     /*public Result deleteBusiBookBaseinfoById(Long id){
         Result result=new Result();

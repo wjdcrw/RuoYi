@@ -1,6 +1,7 @@
 package com.ruoyi.busi.mapper;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -43,6 +44,8 @@ public interface BusiBookBaseinfoMapper
      * @return 结果
      */
     public int updateBusiBookBaseinfo(BusiBookBaseinfo busiBookBaseinfo);
+
+    public int updateBusiBookBaseinfoState(@Param("ids")List<Long> ids, @Param("state")int state);
 
     /**
      * 删除图书类型

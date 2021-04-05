@@ -61,4 +61,11 @@ public interface IBusiBookBaseinfoService
     public int deleteBusiBookBaseinfoById(Long id);
 
 
+    /**
+     * 批量修改图书状态
+     * @param ids
+     * @param state
+     * @return
+     */
+    public int updateBusiBookBaseinfoState(List<Long>ids,int state);
 }

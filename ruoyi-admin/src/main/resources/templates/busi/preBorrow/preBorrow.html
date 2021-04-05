@@ -40,7 +40,7 @@
         </div>
 
         <div class="btn-group-sm" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="busi:preBorrow:add">
+           <!-- <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="busi:preBorrow:add">
                 <i class="fa fa-plus"></i> 添加
             </a>
             <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="busi:preBorrow:edit">
@@ -48,7 +48,7 @@
             </a>
             <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="busi:preBorrow:remove">
                 <i class="fa fa-remove"></i> 删除
-            </a>
+            </a>-->
             <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="busi:preBorrow:export">
                 <i class="fa fa-download"></i> 导出
             </a>
@@ -61,7 +61,7 @@
 <th:block th:include="include :: footer" />
 <script th:inline="javascript">
     var editFlag = [[${@permission.hasPermi('busi:preBorrow:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('busi:preBorrow:remove')}]];
+    var removeFlag = [[${@permission.hasPermi('busi:preBorrow:cancle')}]];
     var stateDatas = [[${@dict.getType('busi_preBorrow_state')}]];
     var prefix = ctx + "busi/preBorrow";
 
@@ -124,7 +124,7 @@
                         var actions = [];
                         console.log(value);
 
-                        actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
                         if(row.state==0){
                             actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消</a>');
                         }

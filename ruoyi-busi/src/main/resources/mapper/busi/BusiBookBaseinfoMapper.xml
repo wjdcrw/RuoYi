@@ -75,13 +75,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </trim>
         where id = #{id}
     </update>
-
+    <update id="updateBusiBookBaseinfoState" parameterType="Long">
+        update busi_book_baseinfo set state=#{state}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
     <delete id="deleteBusiBookBaseinfoById" parameterType="Long">
         delete from busi_book_baseinfo where id = #{id}
     </delete>
 
     <delete id="deleteBusiBookBaseinfoByIds" parameterType="String">
         delete from busi_book_baseinfo where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="updateBusiBookBaseinfoByIds" parameterType="String">
+        delete from busi_book_baseinfo where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

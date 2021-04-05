@@ -2,6 +2,7 @@ package com.ruoyi.busi.mapper;
 
 import java.util.List;
 import com.ruoyi.busi.domain.BusiBookPreborrow;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * 预约查询Mapper接口
@@ -26,6 +27,12 @@ public interface BusiBookPreborrowMapper
      * @return 预约查询集合
      */
     public List<BusiBookPreborrow> selectBusiBookPreborrowList(BusiBookPreborrow busiBookPreborrow);
+
+    /**
+     * 查询处于未完成状态但超时的预约数据
+     * @return
+     */
+    public List<BusiBookPreborrow> selectBusiBookPreborrowOverTimerList();
 
     /**
      * 新增预约查询
@@ -58,4 +65,12 @@ public interface BusiBookPreborrowMapper
      * @return 结果
      */
     public int deleteBusiBookPreborrowByIds(String[] ids);
+
+    /**
+     * 批量修改预约状态
+     * @param ids
+     * @param state
+     * @return
+     */
+    public int updateBusiBookPreborrowState(@Param("ids") List<Long> ids, @Param("state") int state);
 }
