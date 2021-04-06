@@ -1,14 +1,13 @@
 package com.ruoyi.busi.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
 import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.ShiroUtils;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +54,11 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     public List<BusiBookPreborrow> selectBusiBookPreborrowList(BusiBookPreborrow busiBookPreborrow)
     {
 
-        return busiBookPreborrowMapper.selectBusiBookPreborrowList(busiBookPreborrow);
+        if(SecurityUtils.getSubject().hasRole("reader")){
+            busiBookPreborrow.setUserId(ShiroUtils.getSysUser().getUserId());
+        }
+        List<BusiBookPreborrow> busiBookPreborrows = busiBookPreborrowMapper.selectBusiBookPreborrowList(busiBookPreborrow);
+        return busiBookPreborrows;
     }
 
     /**

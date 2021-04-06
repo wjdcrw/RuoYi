@@ -25,6 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectBusiBookPreborrowList" parameterType="BusiBookPreborrow" resultMap="BusiBookPreborrowResult">
         <include refid="selectBusiBookPreborrowVo"/>
         <if test="userLoginName != null and userLoginName!=''"> and u.login_name = #{userLoginName}</if>
+        <if test="userId != null and bookName!=''"> and p.userId= #{userId}</if>
         <if test="bookId != null "> and p.bookId = #{bookId}</if>
         <if test="bookName != null and bookName!=''"> and b.name = #{bookName}</if>
         <if test="state != null "> and p.state = #{state}</if>
