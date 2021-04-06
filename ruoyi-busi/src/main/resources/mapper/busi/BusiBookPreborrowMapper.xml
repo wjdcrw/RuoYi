@@ -17,10 +17,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBusiBookPreborrowVo">
---         select id, userId, bookId, createTime, finishTime, state from busi_book_preBorrow
         select p.id, p.userId, p.bookId, p.createTime, p.finishTime, p.state,u.login_name userLoginName,
         u.user_name userName,b.name bookName from busi_book_preBorrow p,busi_book_baseinfo b,sys_user u
-        where p.userId=u.user_id and p.bookId=b.id and and p.state!=3
+        where p.userId=u.user_id and p.bookId=b.id and p.state!=3
     </sql>
 
     <select id="selectBusiBookPreborrowList" parameterType="BusiBookPreborrow" resultMap="BusiBookPreborrowResult">
@@ -65,10 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="finishTime != null">finishTime = #{finishTime},</if>
             <if test="state != null">state = #{state},</if>
         </trim>
-        where id in
-        <foreach item="id" collection="list" open="(" separator="," close=")">
-            #{id}
-        </foreach>
+        where id =#{id}
     </update>
     <update id="updateBusiBookPreborrowState" parameterType="Long">
         update busi_book_preBorrow

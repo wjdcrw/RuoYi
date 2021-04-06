@@ -49,9 +49,9 @@
             <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="busi:preBorrow:remove">
                 <i class="fa fa-remove"></i> 删除
             </a>-->
-            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="busi:preBorrow:export">
+            <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="busi:preBorrow:export">
                 <i class="fa fa-download"></i> 导出
-            </a>
+            </a>-->
         </div>
         <div class="col-sm-12 select-table table-striped">
             <table id="bootstrap-table"></table>
@@ -126,7 +126,8 @@
 
                         // actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
                         if(row.state==0){
-                            actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消</a>');
+                            // actions.push('<a class="btn btn-danger btn-xs ' + cancleFlag + '" href="javascript:void(0)" onclick="cancle(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消</a>');
+                            actions.push('<a class="btn btn-danger btn-xs" href="javascript:void(0)" onclick="cancle(\'' + row.id + '\')"><i class="fa fa-remove"></i>取消</a>');
                         }
 
                         return actions.join('');
@@ -135,6 +136,13 @@
         };
         $.table.init(options);
     });
+    function cancle(preBorrowId) {
+        $.modal.confirm("确定要取消吗？", function() {
+            var data = { "id": preBorrowId };
+            // $.operate.get(ctx+"busi/preBorrow/add/"+ bookId);
+            $.operate.post(ctx+"busi/preBorrow/cancle", data);
+        })
+    }
 </script>
 </body>
 </html>

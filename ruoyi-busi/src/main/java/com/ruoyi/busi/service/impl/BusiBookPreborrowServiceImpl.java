@@ -9,6 +9,7 @@ import com.ruoyi.busi.domain.BusiBookBaseinfo;
 import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
 import com.ruoyi.common.utils.DateUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.busi.mapper.BusiBookPreborrowMapper;
@@ -53,6 +54,7 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     @Override
     public List<BusiBookPreborrow> selectBusiBookPreborrowList(BusiBookPreborrow busiBookPreborrow)
     {
+
         return busiBookPreborrowMapper.selectBusiBookPreborrowList(busiBookPreborrow);
     }
 
@@ -129,9 +131,22 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     }
 
     @Override
+    @Transactional
     public int cancle(BusiBookPreborrow busiBookPreborrow) {
-        busiBookPreborrow.setState(3);
-        return busiBookPreborrowMapper.updateBusiBookPreborrow(busiBookPreborrow);
+        try{
+            busiBookPreborrow = busiBookPreborrowMapper.selectBusiBookPreborrowById(busiBookPreborrow.getId());
+            busiBookPreborrow.setState(3);
+            busiBookPreborrow.setFinishTime(DateUtils.getNowDate());
+            List<Long> bookIds=new ArrayList<>();
+            bookIds.add(busiBookPreborrow.getBookId());
+            busiBookBaseinfoMapper.updateBusiBookBaseinfoState(bookIds,0);
+            busiBookPreborrowMapper.updateBusiBookPreborrow(busiBookPreborrow);
+            return 1;
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
+        }
+
     }
 
     /**
