@@ -2,6 +2,7 @@ package com.ruoyi.busi.service;
 
 import java.util.List;
 import com.ruoyi.busi.domain.BusiBookBorrow;
+import com.ruoyi.common.core.domain.AjaxResult;
 
 /**
  * 借阅查询Service接口
@@ -58,4 +59,18 @@ public interface IBusiBookBorrowService
      * @return 结果
      */
     public int deleteBusiBookBorrowById(Long id);
+
+    /**
+     * 延长借阅期限
+     * @param busiBookBorrow
+     * @return
+     */
+    public AjaxResult expendBorrowPeriod(BusiBookBorrow busiBookBorrow);
+
+    /**
+     * 还书
+     * @param busiBookBorrow
+     * @return
+     */
+    public AjaxResult returnBook(BusiBookBorrow busiBookBorrow);
 }

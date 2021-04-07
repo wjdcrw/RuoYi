@@ -16,7 +16,26 @@ import com.ruoyi.common.core.domain.BaseEntity;
 public class BusiBookBorrow extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
+    public static final int MAXPERIOD=35;
+    public static final int ONCEEXTEND=7;
 
+    public  enum StateType{
+        /** 未还 */
+        UNRETURN(0),
+        /** 已还 */
+        RETURN(1);
+        private final int value;
+
+        StateType(int value)
+        {
+            this.value = value;
+        }
+
+        public int value()
+        {
+            return this.value;
+        }
+    }
     /**  */
     private Long id;
 

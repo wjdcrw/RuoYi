@@ -5,7 +5,7 @@ import java.util.*;
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
 import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
-import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ShiroUtils;
 import org.apache.shiro.SecurityUtils;
@@ -62,27 +62,33 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     }
 
     /**
-     * 新增预约查询
+     * 新增预约
      * 
-     * @param busiBookPreborrow 预约查询
+     * @param busiBookPreborrow 预约
      * @return 结果
      */
     @Override
-    public int insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow)
+    @Transactional
+    public AjaxResult insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow)
     {
         BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookPreborrow.getBookId());
         //若图书状态不为空闲，预约失败
-        if(busiBookBaseinfo.getState()!=0){
-            return 0;
+        if(busiBookBaseinfo.getState()!=BusiBookBaseinfo.StateType.FREE.value()){
+            return AjaxResult.error("请选择空闲状态的图书！！！");
         }
         //检查读者当前预约数
         if(currentPreBorrowNum(busiBookPreborrow.getUserId())>0){
-            return 0;
+            return AjaxResult.error("您最多只可预约一本图书！！！");
         }
+
         //检查读者当前押金
-        busiBookBaseinfo.setState(1);
+
+        //图书置为预约状态
+        busiBookBaseinfo.setState(BusiBookBaseinfo.StateType.APPOINTMENT.value());
         busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);
-        return busiBookPreborrowMapper.insertBusiBookPreborrow(busiBookPreborrow);
+        //预约表中插入数据
+        busiBookPreborrowMapper.insertBusiBookPreborrow(busiBookPreborrow);
+        return AjaxResult.success();
     }
 
     /*public Result insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow)
@@ -133,16 +139,25 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
         return busiBookPreborrowMapper.deleteBusiBookPreborrowByIds(Convert.toStrArray(ids));
     }
 
+    /**
+     * 取消预约
+     * @param busiBookPreborrow
+     * @return
+     */
     @Override
     @Transactional
     public int cancle(BusiBookPreborrow busiBookPreborrow) {
         try{
+            //根据预约id查询预约信息
             busiBookPreborrow = busiBookPreborrowMapper.selectBusiBookPreborrowById(busiBookPreborrow.getId());
-            busiBookPreborrow.setState(3);
+            busiBookPreborrow.setState(BusiBookPreborrow.StateType.CANCLE.value());
             busiBookPreborrow.setFinishTime(DateUtils.getNowDate());
+            //找出预约的图书编号
             List<Long> bookIds=new ArrayList<>();
             bookIds.add(busiBookPreborrow.getBookId());
-            busiBookBaseinfoMapper.updateBusiBookBaseinfoState(bookIds,0);
+            //将预约的图书更新为空闲状态
+            busiBookBaseinfoMapper.updateBusiBookBaseinfoState(bookIds,BusiBookBaseinfo.StateType.FREE.value());
+            //将预约信息更新为取消状态
             busiBookPreborrowMapper.updateBusiBookPreborrow(busiBookPreborrow);
             return 1;
         }catch (Exception e){
@@ -164,9 +179,13 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
         return busiBookPreborrowMapper.deleteBusiBookPreborrowById(id);
     }
 
+    /**
+     * 处理未完成状态并且超时的预约信息
+     */
     @Override
     @Transactional
     public void preBorrowOverTimer() {
+        //查询所有的未完成状态并且超时的预约信息
         List<BusiBookPreborrow> busiBookPreborrows = busiBookPreborrowMapper.selectBusiBookPreborrowOverTimerList();
         List<Long> bookids=new ArrayList<>();
         List<Long> preBorrowIds=new ArrayList<>();
@@ -175,12 +194,23 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
             preBorrowIds.add(_busiBookPreborrow.getId());
         }
         if(busiBookPreborrows.size()>0){
-            busiBookBaseinfoMapper.updateBusiBookBaseinfoState(bookids,0);
-            busiBookPreborrowMapper.updateBusiBookPreborrowState(preBorrowIds,2);
+            //将这些预约的图书状态更新为空闲
+            busiBookBaseinfoMapper.updateBusiBookBaseinfoState(bookids,BusiBookBaseinfo.StateType.FREE.value());
+            //将这些预约信息更新为超时状态
+            busiBookPreborrowMapper.updateBusiBookPreborrowState(preBorrowIds,BusiBookPreborrow.StateType.OVERTIME.value());
         }
     }
 
+    /**
+     * 查询用户预约的图书数量
+     * @param userId
+     * @return
+     */
     public int currentPreBorrowNum(Long userId){
-        return 0;
+        BusiBookPreborrow busiBookPreborrow=new BusiBookPreborrow();
+        busiBookPreborrow.setUserId(userId);
+        busiBookPreborrow.setState(BusiBookPreborrow.StateType.UNFINISH.value());
+        int count = busiBookPreborrowMapper.selectBusiBookPreborrowList(busiBookPreborrow).size();
+        return count;
     }
 }

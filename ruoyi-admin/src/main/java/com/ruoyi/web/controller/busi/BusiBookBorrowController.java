@@ -113,7 +113,18 @@ public class BusiBookBorrowController extends BaseController
     }
 
     /**
-     * 删除借阅查询
+     * 延长借阅期限
+     */
+    @RequiresPermissions("busi:borrow:extend")
+    @Log(title = "借阅查询", businessType = BusinessType.UPDATE)
+    @PostMapping("/extend")
+    @ResponseBody
+    public AjaxResult expendBorrowPeriod(BusiBookBorrow busiBookBorrow)
+    {
+        return busiBookBorrowService.expendBorrowPeriod(busiBookBorrow);
+    }
+    /**
+     * 删除借阅信息
      */
     @RequiresPermissions("busi:borrow:remove")
     @Log(title = "借阅查询", businessType = BusinessType.DELETE)
@@ -122,5 +133,17 @@ public class BusiBookBorrowController extends BaseController
     public AjaxResult remove(String ids)
     {
         return toAjax(busiBookBorrowService.deleteBusiBookBorrowByIds(ids));
+    }
+
+    /**
+     * 还书
+     */
+    @RequiresPermissions("busi:borrow:return")
+    @Log(title = "借阅查询", businessType = BusinessType.DELETE)
+    @PostMapping( "/return")
+    @ResponseBody
+    public AjaxResult returnBook(BusiBookBorrow busiBookBorrow)
+    {
+        return busiBookBorrowService.returnBook(busiBookBorrow);
     }
 }

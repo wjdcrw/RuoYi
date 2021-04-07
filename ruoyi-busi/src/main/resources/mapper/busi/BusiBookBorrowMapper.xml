@@ -27,17 +27,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBusiBookBorrowList" parameterType="BusiBookBorrow" resultMap="BusiBookBorrowResult">
         <include refid="selectBusiBookBorrowVo"/>
-        <where>  
-            <if test="userId != null "> and userId = #{userId}</if>
-            <if test="bookId != null "> and bookId = #{bookId}</if>
-            <if test="borrowDate != null "> and borrowDate = #{borrowDate}</if>
-            <if test="state != null "> and state = #{state}</if>
-        </where>
+        <if test="userId != null "> and p.userId = #{userId}</if>
+        <if test="bookId != null "> and p.bookId = #{bookId}</if>
+        <if test="borrowDate != null "> and p.borrowDate = #{borrowDate}</if>
+        <if test="state != null "> and p.state = #{state}</if>
+        order by p.state,p.borrowDate desc
     </select>
     
     <select id="selectBusiBookBorrowById" parameterType="Long" resultMap="BusiBookBorrowResult">
         <include refid="selectBusiBookBorrowVo"/>
-        where id = #{id}
+          and p.id = #{id}
     </select>
         
     <insert id="insertBusiBookBorrow" parameterType="BusiBookBorrow" useGeneratedKeys="true" keyProperty="id">

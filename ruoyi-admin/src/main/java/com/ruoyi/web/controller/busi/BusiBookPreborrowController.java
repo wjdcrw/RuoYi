@@ -99,7 +99,7 @@ public class BusiBookPreborrowController extends BaseController
         busiBookPreborrow.setBookId(bookId);
         busiBookPreborrow.setUserId(ShiroUtils.getSysUser().getUserId());
         busiBookPreborrow.setCreateTime(DateUtils.getNowDate());
-        return toAjax(busiBookPreborrowService.insertBusiBookPreborrow(busiBookPreborrow));
+        return busiBookPreborrowService.insertBusiBookPreborrow(busiBookPreborrow);
     }
     /**
      * 新增保存预约查询
@@ -114,7 +114,7 @@ public class BusiBookPreborrowController extends BaseController
         busiBookPreborrow.setBookId(bookId);
         busiBookPreborrow.setUserId(ShiroUtils.getSysUser().getUserId());
         busiBookPreborrow.setCreateTime(DateUtils.getNowDate());
-        return toAjax(busiBookPreborrowService.insertBusiBookPreborrow(busiBookPreborrow));
+        return busiBookPreborrowService.insertBusiBookPreborrow(busiBookPreborrow);
     }
 
     /**
@@ -143,7 +143,7 @@ public class BusiBookPreborrowController extends BaseController
      * 取消预约
      */
     @RequiresPermissions("busi:preBorrow:remove")
-    @Log(title = "预约查询", businessType = BusinessType.DELETE)
+    @Log(title = "取消查询", businessType = BusinessType.DELETE)
     @PostMapping( "/cancle")
     @ResponseBody
     public AjaxResult cancle(BusiBookPreborrow busiBookPreborrow){

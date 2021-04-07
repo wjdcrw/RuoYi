@@ -17,6 +17,28 @@ public class BusiBookBaseinfo extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
+    public  enum StateType{
+        /** 空闲 */
+        FREE(0),
+        /** 预约 */
+        APPOINTMENT(1),
+        /** 借阅 */
+        BORROW(2),
+        /** 报废 */
+        SCRAP(3);
+        private final int value;
+
+        StateType(int value)
+        {
+            this.value = value;
+        }
+
+        public int value()
+        {
+            return this.value;
+        }
+    }
+
     /** 图书编号 */
     private Long id;
 

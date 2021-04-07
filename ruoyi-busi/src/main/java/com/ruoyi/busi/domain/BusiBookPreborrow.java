@@ -17,6 +17,27 @@ public class BusiBookPreborrow extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
+    public  enum StateType{
+        /** 预约中 */
+        UNFINISH(0),
+        /** 完成 */
+        FINISH(1),
+        /** 超时 */
+        OVERTIME(2),
+        /** 取消 */
+        CANCLE(3);
+        private final int value;
+
+        StateType(int value)
+        {
+            this.value = value;
+        }
+
+        public int value()
+        {
+            return this.value;
+        }
+    }
     /**  */
     private Long id;
 

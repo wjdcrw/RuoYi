@@ -7,13 +7,17 @@ import com.ruoyi.busi.domain.BusiBookPreborrow;
 import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
 import com.ruoyi.busi.mapper.BusiBookPreborrowMapper;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.ShiroUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.busi.mapper.BusiBookBorrowMapper;
 import com.ruoyi.busi.domain.BusiBookBorrow;
 import com.ruoyi.busi.service.IBusiBookBorrowService;
 import com.ruoyi.common.core.text.Convert;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 借阅查询Service业务层处理
@@ -45,17 +49,20 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
     /**
      * 查询借阅查询列表
      * 
-     * @param busiBookBorrow 借阅查询
+     * @param busiBookBorrow 借阅
      * @return 借阅查询
      */
     @Override
     public List<BusiBookBorrow> selectBusiBookBorrowList(BusiBookBorrow busiBookBorrow)
     {
+        if(SecurityUtils.getSubject().hasRole("reader")){
+            busiBookBorrow.setUserId(ShiroUtils.getSysUser().getUserId());
+        }
         return busiBookBorrowMapper.selectBusiBookBorrowList(busiBookBorrow);
     }
 
     /**
-     * 新增借阅查询
+     * 新增借阅
      * 
      * @param busiBookBorrow 借阅查询
      * @return 结果
@@ -67,7 +74,7 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
         return busiBookBorrowMapper.insertBusiBookBorrow(busiBookBorrow);
     }
 
-    /*public Result insertBusiBookBorrow(BusiBookBorrow busiBookBorrow){
+    /*public AjaxResult insertBusiBookBorrow(BusiBookBorrow busiBookBorrow){
         Result result=new Result();
         BusiBookBasein busiBookBasein=busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookBorrow.getBookId());
 
@@ -105,39 +112,45 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
         result.setState(Result.SUCCESS);
     }*/
 
-    public Result expendBorrowPeriod(Long borrowId){
-        Result result=new Result();
-        BusiBookBorrow busiBookBorrow = busiBookBorrowMapper.selectBusiBookBorrowById(borrowId);
-        int maxPeriod=35;
-        int extendPeriod=busiBookBorrow.getBorrowPeriod()+7;
-        if(extendPeriod>=maxPeriod){
-            result.setState(Result.FAIL);
-            result.setMessage("已达到最高借阅天数，无法续借！！！");
-            return result;
+    /**
+     * 延长借阅期限
+     * @param
+     * @return
+     */
+    @Override
+    @Transactional
+    public AjaxResult expendBorrowPeriod(BusiBookBorrow busiBookBorrow){
+        //根据借阅id查询借阅信息
+        busiBookBorrow = busiBookBorrowMapper.selectBusiBookBorrowById(busiBookBorrow.getId());
+        //判断是否可以延期
+        int extendPeriod=busiBookBorrow.getBorrowPeriod()+BusiBookBorrow.ONCEEXTEND;
+        if(extendPeriod>BusiBookBorrow.MAXPERIOD){
+            return AjaxResult.error("已达到最高借阅天数，无法续借！！！");
         }
-        if(busiBookBorrow.getState()!=0){
-            result.setState(Result.FAIL);
-            result.setMessage("已不再是借阅状态，无法续借！！！");
-            return result;
+        if(busiBookBorrow.getState()!=BusiBookBorrow.StateType.UNRETURN.value()){
+            return AjaxResult.error("已不再是借阅状态，无法续借！！！");
         }
-
+        //更新借阅期限
         busiBookBorrow.setBorrowPeriod(extendPeriod);
         busiBookBorrowMapper.updateBusiBookBorrow(busiBookBorrow);
-        result.setState(Result.SUCCESS);
-        return result;
+        return AjaxResult.success();
     }
 
-    public Result returnBook(Long borrowId){
-        Result result=new Result();
-        BusiBookBorrow busiBookBorrow = busiBookBorrowMapper.selectBusiBookBorrowById(borrowId);
+    @Override
+    @Transactional
+    public AjaxResult returnBook(BusiBookBorrow busiBookBorrow){
+        //查询借阅信息
+        busiBookBorrow = busiBookBorrowMapper.selectBusiBookBorrowById(busiBookBorrow.getId());
+        //查询图书信息
         BusiBookBaseinfo busiBookBaseinfo=busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookBorrow.getBookId());
-        busiBookBaseinfo.setState(0);
+        //更新图书信息状态
+        busiBookBaseinfo.setState(BusiBookBaseinfo.StateType.FREE.value());
         busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);
+        //更新借阅信息
         busiBookBorrow.setReturnDate(DateUtils.getNowDate());
-        busiBookBorrow.setState(1);
-        busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);
-        result.setState(Result.SUCCESS);
-        return result;
+        busiBookBorrow.setState(BusiBookBorrow.StateType.RETURN.value());
+        busiBookBorrowMapper.updateBusiBookBorrow(busiBookBorrow);
+        return AjaxResult.success();
     }
     /**
      * 修改借阅查询

@@ -2,6 +2,7 @@ package com.ruoyi.busi.service;
 
 import java.util.List;
 import com.ruoyi.busi.domain.BusiBookPreborrow;
+import com.ruoyi.common.core.domain.AjaxResult;
 
 /**
  * 预约查询Service接口
@@ -33,7 +34,7 @@ public interface IBusiBookPreborrowService
      * @param busiBookPreborrow 预约查询
      * @return 结果
      */
-    public int insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow);
+    public AjaxResult insertBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow);
 
     /**
      * 修改预约查询
