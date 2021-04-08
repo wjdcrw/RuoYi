@@ -73,6 +73,7 @@
                 detailUrl: prefix + "/detail/{id}",
                 removeUrl: prefix + "/remove",
                 exportUrl: prefix + "/export",
+
                 // preBorrowUrl:prefix+"/preBorrow",
                 modalName: "图书管理",
                 columns: [{
@@ -141,11 +142,13 @@
             })
         }
         function borrow(bookId) {
-            $.modal.confirm("确定要借阅吗？", function() {
-                var data = { "bookId": bookId };
-                // $.operate.get(ctx+"busi/preBorrow/add/"+ bookId);
-                $.operate.post(ctx+"busi/preBorrow/add", data);
-            })
+            var borrowUrl=ctx + "busi/borrow/add/"+bookId;
+            $.modal.open("借阅新增",borrowUrl);
+            // $.modal.confirm("确定要借阅吗？", function() {
+            //     var data = { "bookId": bookId };
+            //     // $.operate.get(ctx+"busi/preBorrow/add/"+ bookId);
+            //     $.operate.post(ctx+"busi/preBorrow/add", data);
+            // })
         }
     </script>
 </body>

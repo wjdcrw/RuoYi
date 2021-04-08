@@ -20,6 +20,8 @@ public interface BusiBookPreborrowMapper
      */
     public BusiBookPreborrow selectBusiBookPreborrowById(Long id);
 
+    public BusiBookPreborrow selectCurrentBusiBookPreborrow(BusiBookPreborrow busiBookPreborrow);
+
     /**
      * 查询预约查询列表
      * 

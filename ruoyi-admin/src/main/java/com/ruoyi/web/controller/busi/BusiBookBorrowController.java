@@ -1,6 +1,9 @@
 package com.ruoyi.web.controller.busi;
 
 import java.util.List;
+
+import com.ruoyi.busi.domain.BusiBookBaseinfo;
+import com.ruoyi.busi.service.IBusiBookBaseinfoService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,12 +36,25 @@ public class BusiBookBorrowController extends BaseController
 
     @Autowired
     private IBusiBookBorrowService busiBookBorrowService;
+    @Autowired
+    private IBusiBookBaseinfoService busiBookBaseinfoService;
 
     @RequiresPermissions("busi:borrow:view")
     @GetMapping()
     public String borrow()
     {
         return prefix + "/borrow";
+    }
+
+    @RequiresPermissions("busi:borrow:add")
+    @GetMapping("/add/{bookId}")
+    public String borrowAdd(@PathVariable("bookId") Long bookId, ModelMap mmap){
+        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoService.selectBusiBookBaseinfoById(bookId);
+        BusiBookBorrow busiBookBorrow=new BusiBookBorrow();
+        busiBookBorrow.setBookId(bookId);
+        busiBookBorrow.setBookName(busiBookBaseinfo.getName());
+        mmap.put("busiBookBorrow", busiBookBorrow);
+        return prefix + "/borrowAdd";
     }
 
     /**
@@ -86,7 +102,7 @@ public class BusiBookBorrowController extends BaseController
     @ResponseBody
     public AjaxResult addSave(BusiBookBorrow busiBookBorrow)
     {
-        return toAjax(busiBookBorrowService.insertBusiBookBorrow(busiBookBorrow));
+        return busiBookBorrowService.insertBusiBookBorrow(busiBookBorrow);
     }
 
     /**

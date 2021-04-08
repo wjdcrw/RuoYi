@@ -34,7 +34,7 @@ public interface IBusiBookBorrowService
      * @param busiBookBorrow 借阅查询
      * @return 结果
      */
-    public int insertBusiBookBorrow(BusiBookBorrow busiBookBorrow);
+    public AjaxResult insertBusiBookBorrow(BusiBookBorrow busiBookBorrow);
 
     /**
      * 修改借阅查询

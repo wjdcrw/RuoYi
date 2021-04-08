@@ -116,7 +116,7 @@
                 },
                 {
                     field: 'borrowPeriod',
-                    title: '借阅时间'
+                    title: '借阅期限'
                 },
                 {
                     field: 'returnDate',
@@ -134,8 +134,11 @@
                     align: 'center',
                     formatter: function(value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-success btn-xs ' + extendFlag + '" href="javascript:void(0)" onclick="extend(\'' + row.id + '\')"><i class="fa fa-edit"></i>续借</a> ');
-                        actions.push('<a class="btn btn-warning btn-xs ' + returnFlag + '" href="javascript:void(0)" onclick="returnBook(\'' + row.id + '\')"><i class="fa fa-remove"></i>还书</a>');
+                        if(row.state==0){
+                            actions.push('<a class="btn btn-success btn-xs ' + extendFlag + '" href="javascript:void(0)" onclick="extend(\'' + row.id + '\')"><i class="fa fa-edit"></i>续借</a> ');
+                            actions.push('<a class="btn btn-warning btn-xs ' + returnFlag + '" href="javascript:void(0)" onclick="returnBook(\'' + row.id + '\')"><i class="fa fa-remove"></i>还书</a>');
+                        }
+
                         return actions.join('');
                     }
                 }]

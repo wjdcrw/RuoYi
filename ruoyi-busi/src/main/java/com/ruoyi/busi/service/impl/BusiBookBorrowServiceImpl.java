@@ -4,12 +4,13 @@ import java.util.List;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
 import com.ruoyi.busi.domain.BusiBookPreborrow;
-import com.ruoyi.busi.domain.Result;
 import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
 import com.ruoyi.busi.mapper.BusiBookPreborrowMapper;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ShiroUtils;
+import com.ruoyi.system.service.ISysUserService;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
     private BusiBookBaseinfoMapper busiBookBaseinfoMapper;
     @Autowired
     private BusiBookPreborrowMapper busiBookPreborrowMapper;
+    @Autowired
+    private ISysUserService userService;
     /**
      * 查询借阅查询
      * 
@@ -67,50 +70,67 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
      * @param busiBookBorrow 借阅查询
      * @return 结果
      */
-    @Override
+    /*@Override
     public int insertBusiBookBorrow(BusiBookBorrow busiBookBorrow)
     {
 
         return busiBookBorrowMapper.insertBusiBookBorrow(busiBookBorrow);
-    }
+    }*/
 
-    /*public AjaxResult insertBusiBookBorrow(BusiBookBorrow busiBookBorrow){
-        Result result=new Result();
-        BusiBookBasein busiBookBasein=busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookBorrow.getBookId());
+    @Override
+    @Transactional
+    public AjaxResult insertBusiBookBorrow(BusiBookBorrow busiBookBorrow){
+        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookBorrow.getBookId());
+        //校验用户是否存在
+        SysUser sysUser = userService.selectUserByLoginName(busiBookBorrow.getUserLoginName());
+        if(sysUser==null){
+            return AjaxResult.error("用户名不存在！！！");
+        }
+        busiBookBorrow.setUserId(sysUser.getUserId());
+        //图书状态为非空闲和预约状态
+        if(busiBookBaseinfo.getState()!=BusiBookBaseinfo.StateType.FREE.value()
+                &&busiBookBaseinfo.getState()!=BusiBookBaseinfo.StateType.APPOINTMENT.value()){
+            return AjaxResult.error("请选择空闲状态的图书！！！");
+        }
+
+        //检查读者当前借阅数
+        busiBookBorrow.setState(BusiBookBorrow.StateType.UNRETURN.value());
+        List<BusiBookBorrow> busiBookBorrows = busiBookBorrowMapper.selectBusiBookBorrowList(busiBookBorrow);
+        if(busiBookBorrows.size()>BusiBookBorrow.MAXBORROWCOUNT){
+            return AjaxResult.error("您最多只可借阅"+BusiBookBorrow.MAXBORROWCOUNT+"本图书！！！");
+        }
 
         //若图书为预约状态，查询预约者是不是当前借阅用户，若是则修改预约状态
-        if(busiBookBaseinfo.getState()==1){
-            //查询用户处于预约未完成状态的书籍编号
-            BusiBookPreborrow busiBookPreborrow = busiBookPreborrowMapper.selectBusiBookPreborrowByUserId(busiBookBorrow.getUserId());
-            if(busiBookPreborrow==null||!busiBookPreborrow.getBookId().equals(busiBookBorrow.getBookId())){
-                result.setState(Result.FAIL);
-                result.setMessage("请选择图书状态为空闲的图书！！！");
-                return result;
+        if(busiBookBaseinfo.getState()==BusiBookBaseinfo.StateType.APPOINTMENT.value()){
+            //查询用户处于预约未完成状态的预约信息
+            BusiBookPreborrow busiBookPreborrow=new BusiBookPreborrow();
+            busiBookPreborrow.setUserId(busiBookBorrow.getUserId());
+            busiBookPreborrow.setState(BusiBookPreborrow.StateType.UNFINISH.value());
+            List<BusiBookPreborrow> busiBookPreborrows = busiBookPreborrowMapper.selectBusiBookPreborrowList(busiBookPreborrow);
+            //遍历预约信息，判断借阅的图书是否被借阅用户预订
+            boolean isBorrowUser=false;
+            for(BusiBookPreborrow preborrow:busiBookPreborrows){
+                if(preborrow.getBookId().equals(busiBookBorrow.getBookId())){
+                    isBorrowUser=true;
+                    preborrow.setFinishTime(DateUtils.getNowDate());
+                    preborrow.setState(1);
+                    busiBookPreborrowMapper.updateBusiBookPreborrow(preborrow);
+                }
             }
-            busiBookPreborrow.setFinishTime(DateUtils.getNowDate());
-            busiBookPreborrow.setState(1);
-            busiBookPreborrowMapper.updateBusiBookPreborrow(busiBookPreborrow);
-        }
-        //图书状态为非0非1时
-        if(busiBookBaseinfo.getState()!=0&&busiBookBaseinfo.getState()!=1){
+            if(!isBorrowUser){
+                return AjaxResult.error("此图书已被预约！！！");
+            }
 
-            result.setState(Result.FAIL);
-            result.setMessage("请选择图书状态为空闲的图书！！！");
-            return result;
         }
-        //检查读者当前借阅数
-        if(currentBorrowNum(busiBookBorrow.getUserLoginName())>0){
-            result.setState(Result.FAIL);
-            result.setMessage("您最多只可借阅三本图书！！！");
-            return result;
-        }
-        busiBookBaseinfo.setState(2);
+
+        busiBookBaseinfo.setState(BusiBookBaseinfo.StateType.BORROW.value());
         //更新图书状态
         busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);
+        busiBookBorrow.setBorrowDate(DateUtils.getNowDate());
         //记录借阅信息
-        busiBookBorrowMapper.insertBusiBookBorrow(BusiBookBasein);
-        result.setState(Result.SUCCESS);
-    }*/
+        busiBookBorrowMapper.insertBusiBookBorrow(busiBookBorrow);
+        return AjaxResult.success();
+    }
 
     /**
      * 延长借阅期限
