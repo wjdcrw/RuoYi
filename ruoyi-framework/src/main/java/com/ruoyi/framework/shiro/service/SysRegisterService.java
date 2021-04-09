@@ -29,6 +29,7 @@ public class SysRegisterService
     @Autowired
     private SysPasswordService passwordService;
 
+
     /**
      * 注册
      */
@@ -67,6 +68,8 @@ public class SysRegisterService
             user.setPwdUpdateDate(DateUtils.getNowDate());
             user.setUserName(loginName);
             user.setSalt(ShiroUtils.randomSalt());
+            Long[] RoleIds={3L};
+            user.setRoleIds(RoleIds);
             user.setPassword(passwordService.encryptPassword(user.getLoginName(), user.getPassword(), user.getSalt()));
             boolean regFlag = userService.registerUser(user);
             if (!regFlag)

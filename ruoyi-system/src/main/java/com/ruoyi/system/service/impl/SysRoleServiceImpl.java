@@ -396,7 +396,7 @@ public class SysRoleServiceImpl implements ISysRoleService
      * 非超级管理员不可查看超级管理员
      * @return
      */
-    private List<SysRole> security(List<SysRole> sysRoles){
+    public List<SysRole> security(List<SysRole> sysRoles){
         if(sysRoles!=null&&!hasAdmin()){
             for(SysRole sysRole:sysRoles){
                 if("admin".equals(sysRole.getRoleKey())){

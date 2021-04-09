@@ -201,10 +201,12 @@ public class SysUserServiceImpl implements ISysUserService
     @Transactional
     public int insertUser(SysUser user)
     {
+        user.setDeptId(103L);
         // 新增用户信息
         int rows = userMapper.insertUser(user);
         // 新增用户岗位关联
         insertUserPost(user);
+
         // 新增用户与角色管理
         insertUserRole(user.getUserId(), user.getRoleIds());
         return rows;
@@ -219,8 +221,9 @@ public class SysUserServiceImpl implements ISysUserService
     @Override
     public boolean registerUser(SysUser user)
     {
-        user.setUserType(UserConstants.REGISTER_USER_TYPE);
-        return userMapper.insertUser(user) > 0;
+//        user.setUserType(UserConstants.REGISTER_USER_TYPE);
+//        return userMapper.insertUser(user) > 0;
+        return insertUser(user)>0;
     }
 
     /**
@@ -285,7 +288,7 @@ public class SysUserServiceImpl implements ISysUserService
     /**
      * 新增用户角色信息
      * 
-     * @param user 用户对象
+     * @param
      */
     public void insertUserRole(Long userId, Long[] roleIds)
     {
