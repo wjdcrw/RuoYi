@@ -20,6 +20,8 @@ public interface ISysDeptService
      */
     public List<SysDept> selectDeptList(SysDept dept);
 
+    public List<SysDept> selectDeptChildenList(String dept);
+
     /**
      * 查询部门管理树
      * 

@@ -29,6 +29,14 @@
                                     <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
                                 </select>
                             </li>
+                            <li>
+                                <label>图书馆：</label>
+                                <select name="deptId" th:with="depts=${@iSysDeptService.selectDeptChildenList('101')}">
+                                    <option value="">所有</option>user.avatar
+<!--                                    <option th:if="${user.deptId}==${dept.deptId}" selected = "selected" th:each="dept : ${depts}" th:text="${dept.deptName}" th:value="${dept.deptId}"></option>-->
+                                    <option th:each="dept : ${depts}" th:text="${dept.deptName}" th:value="${dept.deptId}"></option>
+                                </select>
+                            </li>
                             <!--<li>
                                 <label>ISBN：</label>
                                 <input type="text" name="ISBN"/>
@@ -121,6 +129,15 @@
                     formatter: function(value, row, index) {
                         return $.table.selectDictLabel(stateDatas, value);
                     }
+                },
+                {
+                    field: 'deptId',
+                    title: '所属图书馆id',
+                    visible: false
+                },
+                {
+                    field: 'deptName',
+                    title: '所属图书馆'
                 },
                 {
                     title: '操作',

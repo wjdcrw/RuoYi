@@ -13,11 +13,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="publisher"    column="publisher"    />
         <result property="publishTime"    column="publishTime"    />
         <result property="createTime"    column="createTime"    />
-        <result property="updateTime"    column="updateTime"    />
+        <result property="price"    column="price"    />
+        <result property="introduce"    column="introduce"    />
+        <result property="deptId"    column="deptId"    />
+        <result property="deptName"    column="deptName"    />
     </resultMap>
 
     <sql id="selectBusiBookBaseinfoVo">
-        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime,state,price,introduce from busi_book_baseinfo
+        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime,state,price,introduce,deptId,(select d.dept_name from sys_dept d where d.dept_id=b.deptId) as deptName from busi_book_baseinfo b
     </sql>
 
     <select id="selectBusiBookBaseinfoList" parameterType="BusiBookBaseinfo" resultMap="BusiBookBaseinfoResult">
@@ -30,6 +33,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="ISBN != null  and ISBN != ''"> and ISBN = #{ISBN}</if>
             <if test="publisher != null  and publisher != ''"> and publisher = #{publisher}</if>
             <if test="publishTime != null "> and publishTime = #{publishTime}</if>
+            <if test="deptId != null "> and deptId = #{deptId}</if>
         </where>
     </select>
     
@@ -51,6 +55,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">updateTime,</if>
             <if test="price != null">price,</if>
             <if test="introduce != null">introduce,</if>
+            <if test="deptId != null">deptId,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -63,6 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">sysdate(),</if>
             <if test="price != null">#{price},</if>
             <if test="introduce != null">#{introduce},</if>
+            <if test="deptId != null">#{deptId},</if>
          </trim>
     </insert>
 
@@ -79,6 +85,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="state != null">state = #{state}, </if>
             <if test="price != null">price = #{price},</if>
             <if test="introduce != null">introduce = #{introduce},</if>
+            <if test="deptId != null">deptId = #{deptId},</if>
         </trim>
         where id = #{id}
     </update>

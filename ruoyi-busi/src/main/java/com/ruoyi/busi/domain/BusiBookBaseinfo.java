@@ -43,6 +43,11 @@ public class BusiBookBaseinfo extends BaseEntity
     /** 图书编号 */
     private Long id;
 
+    /** 部门编号 */
+    @Excel(name = "部门编号")
+    private Long deptId;
+
+    private String deptName;
     /** 图书名称 */
     @Excel(name = "图书名称")
     private String name;
@@ -167,6 +172,24 @@ public class BusiBookBaseinfo extends BaseEntity
     public String getIntroduce() 
     {
         return introduce;
+    }
+
+    public Long getDeptId() {
+        return deptId;
+    }
+
+    public BusiBookBaseinfo setDeptId(Long deptId) {
+        this.deptId = deptId;
+        return this;
+    }
+
+    public String getDeptName() {
+        return deptName;
+    }
+
+    public BusiBookBaseinfo setDeptName(String deptName) {
+        this.deptName = deptName;
+        return this;
     }
 
     @Override

@@ -87,10 +87,14 @@ public class Constants
      */
     public static final String SYS_DICT_CACHE = "sys-dict";
 
+
+
     /**
      * 字典管理 cache key
      */
     public static final String SYS_DICT_KEY = "sys_dict:";
+
+    public static final String SYS_DEPT_KEY="sys_dept:";
 
     /**
      * 资源映射路径 前缀

@@ -7,6 +7,7 @@ import com.ruoyi.busi.mapper.BusiBookPreborrowMapper;
 import com.ruoyi.busi.service.IBusiBookBaseinfoService;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.ShiroUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,7 @@ public class BusiBookBaseinfoServiceImpl implements IBusiBookBaseinfoService
     public int insertBusiBookBaseinfo(BusiBookBaseinfo busiBookBaseinfo)
     {
         busiBookBaseinfo.setCreateTime(DateUtils.getNowDate());
+        busiBookBaseinfo.setDeptId(ShiroUtils.getSysUser().getDeptId());
         return busiBookBaseinfoMapper.insertBusiBookBaseinfo(busiBookBaseinfo);
     }
 

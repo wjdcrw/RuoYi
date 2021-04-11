@@ -3,6 +3,13 @@ package com.ruoyi.system.service.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import com.ruoyi.common.constant.Constants;
+import com.ruoyi.common.core.domain.entity.SysDictData;
+import com.ruoyi.common.core.domain.entity.SysDictType;
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.DictUtils;
+import com.ruoyi.common.utils.spring.SpringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,16 +24,33 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.mapper.SysDeptMapper;
 import com.ruoyi.system.service.ISysDeptService;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 部门管理 服务实现
  * 
  * @author ruoyi
  */
-@Service
+@Service("iSysDeptService")
 public class SysDeptServiceImpl implements ISysDeptService
 {
     @Autowired
     private SysDeptMapper deptMapper;
+
+    /**
+     * 项目启动时，初始化部门到缓存
+     */
+    /*@PostConstruct
+    public void init()
+    {
+        List<SysDept> sysDepts = deptMapper.selectChildrenDeptById(101L);
+        for (SysDept sysDept : sysDepts)
+        {
+            List<SysDictData> dictDatas = dictDataMapper.selectDictDataByType(dictType.getDictType());
+            DictUtils.setDictCache(dictType.getDictType(), dictDatas);
+            SpringUtils.getBean(RedisCache.class).setCacheObject(Constants.SYS_DEPT_KEY + sysDept.getDeptId(),"bbb");
+        }
+    }*/
 
     /**
      * 查询部门管理数据
@@ -39,6 +63,11 @@ public class SysDeptServiceImpl implements ISysDeptService
     public List<SysDept> selectDeptList(SysDept dept)
     {
         return deptMapper.selectDeptList(dept);
+    }
+
+    public List<SysDept> selectDeptChildenList(String deptId){
+        List<SysDept> sysDepts = deptMapper.selectChildrenDeptById(Long.parseLong(deptId));
+        return sysDepts;
     }
 
     /**

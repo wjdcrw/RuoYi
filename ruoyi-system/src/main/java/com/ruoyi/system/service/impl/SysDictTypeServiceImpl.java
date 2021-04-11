@@ -3,6 +3,9 @@ package com.ruoyi.system.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.spring.SpringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
