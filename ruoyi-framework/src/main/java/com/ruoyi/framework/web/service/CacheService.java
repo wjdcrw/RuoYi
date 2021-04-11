@@ -1,10 +1,19 @@
 package com.ruoyi.framework.web.service;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.lang3.ArrayUtils;
+import org.apache.shiro.session.mgt.SimpleSession;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
+import org.crazycake.shiro.IRedisManager;
+import org.crazycake.shiro.exception.SerializationException;
+import org.crazycake.shiro.serializer.ObjectSerializer;
+import org.crazycake.shiro.serializer.StringSerializer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.common.constant.Constants;
-import com.ruoyi.common.utils.CacheUtils;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.redis.RedisCache;
 
 /**
  * 缓存操作处理
@@ -14,6 +23,14 @@ import com.ruoyi.common.utils.CacheUtils;
 @Service
 public class CacheService
 {
+    @Autowired
+    private RedisCache redisCache;
+
+    @Autowired
+    private IRedisManager redisManager;
+
+    private final String DEFAULT_SESSION_KEY_PREFIX = "shiro:session:";
+
     /**
      * 获取所有缓存名称
      * 
@@ -21,8 +38,9 @@ public class CacheService
      */
     public String[] getCacheNames()
     {
-        String[] cacheNames = CacheUtils.getCacheNames();
-        return ArrayUtils.removeElement(cacheNames, Constants.SYS_AUTH_CACHE);
+        String[] cacheNames = { "shiro:session", "shiro:cache:sys-authCache", "shiro:cache:sys-userCache", "sys_dict",
+                "sys_config", "sys_loginRecordCache" };
+        return cacheNames;
     }
 
     /**
@@ -33,7 +51,13 @@ public class CacheService
      */
     public Set<String> getCacheKeys(String cacheName)
     {
-        return CacheUtils.getCache(cacheName).keys();
+        Set<String> tmpKeys = new HashSet<String>();
+        Collection<String> cacheKeys = redisCache.keys(cacheName + ":*");
+        for (String cacheKey : cacheKeys)
+        {
+            tmpKeys.add(cacheKey);
+        }
+        return tmpKeys;
     }
 
     /**
@@ -45,7 +69,34 @@ public class CacheService
      */
     public Object getCacheValue(String cacheName, String cacheKey)
     {
-        return CacheUtils.get(cacheName, cacheKey);
+        if (cacheKey.contains(DEFAULT_SESSION_KEY_PREFIX))
+        {
+            try
+            {
+                SimpleSession simpleSession = (SimpleSession) new ObjectSerializer().deserialize(redisManager.get(new StringSerializer().serialize(cacheKey)));
+                Object obj = simpleSession.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY);
+                if (null == obj)
+                {
+                    return "未登录会话";
+                }
+                if (obj instanceof SimplePrincipalCollection)
+                {
+                    SimplePrincipalCollection spc = (SimplePrincipalCollection) obj;
+                    obj = spc.getPrimaryPrincipal();
+                    if (null != obj && obj instanceof SysUser)
+                    {
+                        SysUser sysUser = (SysUser) obj;
+                        return sysUser;
+                    }
+                }
+                return obj;
+            }
+            catch (SerializationException e)
+            {
+                return null;
+            }
+        }
+        return redisCache.getCacheObject(cacheKey);
     }
 
     /**
@@ -55,7 +106,8 @@ public class CacheService
      */
     public void clearCacheName(String cacheName)
     {
-        CacheUtils.removeAll(cacheName);
+        Collection<String> cacheKeys = redisCache.keys(cacheName + ":*");
+        redisCache.deleteObject(cacheKeys);
     }
 
     /**
@@ -66,7 +118,7 @@ public class CacheService
      */
     public void clearCacheKey(String cacheName, String cacheKey)
     {
-        CacheUtils.remove(cacheName, cacheKey);
+        redisCache.deleteObject(cacheKey);
     }
 
     /**
@@ -74,10 +126,7 @@ public class CacheService
      */
     public void clearAll()
     {
-        String[] cacheNames = getCacheNames();
-        for (String cacheName : cacheNames)
-        {
-            CacheUtils.removeAll(cacheName);
-        }
+        Collection<String> cacheKeys = redisCache.keys("*");
+        redisCache.deleteObject(cacheKeys);
     }
 }

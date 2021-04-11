@@ -10,12 +10,9 @@ import com.ruoyi.common.utils.ServletUtils;
 import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.framework.shiro.session.OnlineSession;
 import com.ruoyi.system.domain.SysLogininfor;
 import com.ruoyi.system.domain.SysOperLog;
-import com.ruoyi.system.domain.SysUserOnline;
 import com.ruoyi.system.service.ISysOperLogService;
-import com.ruoyi.system.service.ISysUserOnlineService;
 import com.ruoyi.system.service.impl.SysLogininforServiceImpl;
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -28,37 +25,6 @@ import eu.bitwalker.useragentutils.UserAgent;
 public class AsyncFactory
 {
     private static final Logger sys_user_logger = LoggerFactory.getLogger("sys-user");
-
-    /**
-     * 同步session到数据库
-     * 
-     * @param session 在线用户会话
-     * @return 任务task
-     */
-    public static TimerTask syncSessionToDb(final OnlineSession session)
-    {
-        return new TimerTask()
-        {
-            @Override
-            public void run()
-            {
-                SysUserOnline online = new SysUserOnline();
-                online.setSessionId(String.valueOf(session.getId()));
-                online.setDeptName(session.getDeptName());
-                online.setLoginName(session.getLoginName());
-                online.setStartTimestamp(session.getStartTimestamp());
-                online.setLastAccessTime(session.getLastAccessTime());
-                online.setExpireTime(session.getTimeout());
-                online.setIpaddr(session.getHost());
-                online.setLoginLocation(AddressUtils.getRealAddressByIP(session.getHost()));
-                online.setBrowser(session.getBrowser());
-                online.setOs(session.getOs());
-                online.setStatus(session.getStatus());
-                SpringUtils.getBean(ISysUserOnlineService.class).saveOnline(online);
-
-            }
-        };
-    }
 
     /**
      * 操作日志记录

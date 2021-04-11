@@ -1,14 +1,15 @@
 package com.ruoyi.system.service.impl;
 
+import java.util.Collection;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.BusinessException;
-import com.ruoyi.common.utils.CacheUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysConfig;
 import com.ruoyi.system.mapper.SysConfigMapper;
@@ -25,6 +26,9 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Autowired
     private SysConfigMapper configMapper;
 
+    @Autowired
+    private RedisCache redisCache;
+
     /**
      * 项目启动时，初始化参数到缓存
      */
@@ -34,7 +38,7 @@ public class SysConfigServiceImpl implements ISysConfigService
         List<SysConfig> configsList = configMapper.selectConfigList(new SysConfig());
         for (SysConfig config : configsList)
         {
-            CacheUtils.put(getCacheName(), getCacheKey(config.getConfigKey()), config.getConfigValue());
+            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
         }
     }
 
@@ -61,7 +65,7 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Override
     public String selectConfigByKey(String configKey)
     {
-        String configValue = Convert.toStr(CacheUtils.get(getCacheName(), getCacheKey(configKey)));
+        String configValue = Convert.toStr(redisCache.getCacheObject(getCacheKey(configKey)));
         if (StringUtils.isNotEmpty(configValue))
         {
             return configValue;
@@ -71,7 +75,7 @@ public class SysConfigServiceImpl implements ISysConfigService
         SysConfig retConfig = configMapper.selectConfig(config);
         if (StringUtils.isNotNull(retConfig))
         {
-            CacheUtils.put(getCacheName(), getCacheKey(configKey), retConfig.getConfigValue());
+            redisCache.setCacheObject(getCacheKey(configKey), retConfig.getConfigValue());
             return retConfig.getConfigValue();
         }
         return StringUtils.EMPTY;
@@ -101,7 +105,7 @@ public class SysConfigServiceImpl implements ISysConfigService
         int row = configMapper.insertConfig(config);
         if (row > 0)
         {
-            CacheUtils.put(getCacheName(), getCacheKey(config.getConfigKey()), config.getConfigValue());
+            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
         }
         return row;
     }
@@ -118,7 +122,7 @@ public class SysConfigServiceImpl implements ISysConfigService
         int row = configMapper.updateConfig(config);
         if (row > 0)
         {
-            CacheUtils.put(getCacheName(), getCacheKey(config.getConfigKey()), config.getConfigValue());
+            redisCache.setCacheObject(getCacheKey(config.getConfigKey()), config.getConfigValue());
         }
         return row;
     }
@@ -144,8 +148,8 @@ public class SysConfigServiceImpl implements ISysConfigService
         int count = configMapper.deleteConfigByIds(Convert.toStrArray(ids));
         if (count > 0)
         {
-
-            CacheUtils.removeAll(getCacheName());
+            Collection<String> keys = redisCache.keys(Constants.SYS_CONFIG_KEY + "*");
+            redisCache.deleteObject(keys);
         }
         return count;
     }
@@ -156,7 +160,8 @@ public class SysConfigServiceImpl implements ISysConfigService
     @Override
     public void clearCache()
     {
-        CacheUtils.removeAll(getCacheName());
+        Collection<String> keys = redisCache.keys(Constants.SYS_CONFIG_KEY + "*");
+        redisCache.deleteObject(keys);
     }
 
     /**
@@ -175,16 +180,6 @@ public class SysConfigServiceImpl implements ISysConfigService
             return UserConstants.CONFIG_KEY_NOT_UNIQUE;
         }
         return UserConstants.CONFIG_KEY_UNIQUE;
-    }
-
-    /**
-     * 获取cache name
-     * 
-     * @return 缓存名
-     */
-    private String getCacheName()
-    {
-        return Constants.SYS_CONFIG_CACHE;
     }
 
     /**
