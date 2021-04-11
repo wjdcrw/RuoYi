@@ -56,6 +56,7 @@ public class SysRoleServiceImpl implements ISysRoleService
     @DataScope(deptAlias = "d")
     public List<SysRole> selectRoleList(SysRole role)
     {
+
         return security(roleMapper.selectRoleList(role));
     }
 
@@ -397,7 +398,10 @@ public class SysRoleServiceImpl implements ISysRoleService
      * @return
      */
     public List<SysRole> security(List<SysRole> sysRoles){
-        if(sysRoles!=null&&!hasAdmin()){
+        if(sysRoles==null){
+            return sysRoles;
+        }
+        if(!hasAdmin()){
             for(SysRole sysRole:sysRoles){
                 if("admin".equals(sysRole.getRoleKey())){
                     sysRoles.remove(sysRole);
@@ -405,6 +409,21 @@ public class SysRoleServiceImpl implements ISysRoleService
                 }
             }
         }
+
+        if(hasRole("system")){
+            return sysRoles;
+        }
+
+        if(hasRole("manager")||hasRole("reader")){
+            for(SysRole sysRole:sysRoles){
+                if("reader".equals(sysRole.getRoleKey())){
+                    sysRoles.clear();
+                    sysRoles.add(sysRole);
+                    return sysRoles;
+                }
+            }
+        }
+
         return sysRoles;
     }
     private SysRole security(SysRole sysRole){
@@ -420,6 +439,10 @@ public class SysRoleServiceImpl implements ISysRoleService
      */
     private boolean hasAdmin(){
         return SecurityUtils.getSubject().hasRole("admin");
+    }
+
+    private boolean hasRole(String roleName){
+        return SecurityUtils.getSubject().hasRole(roleName);
     }
 
 }

@@ -35,6 +35,13 @@ public interface SysRoleDeptMapper
     public int selectCountRoleDeptByDeptId(Long deptId);
 
     /**
+     * 查询当前
+     * @param deptId
+     * @return
+     */
+    public int selectRoleDeptByDeptIdNested(Long deptId);
+
+    /**
      * 批量新增角色部门信息
      * 
      * @param roleDeptList 角色部门列表

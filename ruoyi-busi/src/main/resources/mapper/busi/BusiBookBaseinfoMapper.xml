@@ -17,12 +17,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBusiBookBaseinfoVo">
-        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime,state,price from busi_book_baseinfo
+        select id, name, author, bookType, ISBN, publisher, publishTime, createTime, updateTime,state,price,introduce from busi_book_baseinfo
     </sql>
 
     <select id="selectBusiBookBaseinfoList" parameterType="BusiBookBaseinfo" resultMap="BusiBookBaseinfoResult">
         <include refid="selectBusiBookBaseinfoVo"/>
-        <where>  
+        <where>
+            <if test="id != null "> and id = #{id}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="author != null  and author != ''"> and author = #{author}</if>
             <if test="bookType != null "> and bookType = #{bookType}</if>
@@ -48,6 +49,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="publishTime != null">publishTime,</if>
             <if test="createTime != null">createTime,</if>
             <if test="updateTime != null">updateTime,</if>
+            <if test="price != null">price,</if>
+            <if test="introduce != null">introduce,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -58,6 +61,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="publishTime != null">#{publishTime},</if>
             <if test="createTime != null">sysdate(),</if>
             <if test="updateTime != null">sysdate(),</if>
+            <if test="price != null">#{price},</if>
+            <if test="introduce != null">#{introduce},</if>
          </trim>
     </insert>
 
@@ -72,6 +77,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="publishTime != null">publishTime = #{publishTime},</if>
             <if test="updateTime != null">updateTime = sysdate(),</if>
             <if test="state != null">state = #{state}, </if>
+            <if test="price != null">price = #{price},</if>
+            <if test="introduce != null">introduce = #{introduce},</if>
         </trim>
         where id = #{id}
     </update>

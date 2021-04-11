@@ -52,7 +52,7 @@ public class BusiBillServiceImpl implements IBusiBillService
      * @return 结果
      */
     @Override
-    public int insertBusiBill(BusiBill busiBill)
+    public Long insertBusiBill(BusiBill busiBill)
     {
         busiBill.setCreateTime(DateUtils.getNowDate());
         return busiBillMapper.insertBusiBill(busiBill);

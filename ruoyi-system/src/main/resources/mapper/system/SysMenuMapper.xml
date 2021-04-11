@@ -90,6 +90,19 @@
 		</where>
 		order by parent_id, order_num
 	</select>
+	<select id="selectMenuListSystem" parameterType="SysMenu" resultMap="SysMenuResult">
+		<include refid="selectMenuVo"/>
+		<where>
+			 AND menu_id not in(1,2,3)
+			<if test="menuName != null and menuName != ''">
+				AND menu_name like concat('%', #{menuName}, '%')
+			</if>
+			<if test="visible != null and visible != ''">
+				AND visible = #{visible}
+			</if>
+		</where>
+		order by parent_id, order_num
+	</select>
 
 	<select id="selectMenuListByUserId" parameterType="SysMenu" resultMap="SysMenuResult">
 		select distinct m.menu_id, m.parent_id, m.menu_name, m.url, m.visible, m.is_refresh, ifnull(m.perms,'') as perms, m.target, m.menu_type, m.icon, m.order_num, m.create_time

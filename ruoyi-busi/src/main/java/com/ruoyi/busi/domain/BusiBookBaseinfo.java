@@ -1,5 +1,6 @@
 package com.ruoyi.busi.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -68,7 +69,7 @@ public class BusiBookBaseinfo extends BaseEntity
     private Date publishTime;
 
     /** 价格 */
-    private Long price;
+    private BigDecimal price;
 
     /** 状态：0-闲置 1-预借 2-借出 */
     @Excel(name = "状态：0-闲置 1-预借 2-借出")
@@ -140,16 +141,16 @@ public class BusiBookBaseinfo extends BaseEntity
     {
         return publishTime;
     }
-    public void setPrice(Long price) 
+    public void setPrice(BigDecimal price)
     {
         this.price = price;
     }
 
-    public Long getPrice() 
+    public BigDecimal getPrice()
     {
         return price;
     }
-    public void setState(Integer state) 
+    public void setState(Integer state)
     {
         this.state = state;
     }

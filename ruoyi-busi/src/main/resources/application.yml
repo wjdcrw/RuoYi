@@ -1,0 +1,9 @@
+#支付-当面付qrcode存储与访问路径设置
+trade:
+  zhifu:
+    qrcode:
+      aliPayPath: /alipay
+      weChatPath: /wechat
+      storePath: D:/temp/qr-code
+      httpBasePath: /static/qrcode
+      paySuccessCallBack: http://wjdcrw.natapp1.cc/order/paySuccess

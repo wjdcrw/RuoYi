@@ -1,14 +1,9 @@
 package com.ruoyi.system.service.impl;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.constant.UserConstants;
@@ -72,6 +67,10 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             menuList = menuMapper.selectMenuList(menu);
         }
+        else if(SecurityUtils.getSubject().hasRole("system")){
+            menuList = menuMapper.selectMenuList(menu);
+            systemUserMenuHandle(menuList);
+        }
         else
         {
             menu.getParams().put("userId", userId);
@@ -79,6 +78,8 @@ public class SysMenuServiceImpl implements ISysMenuService
         }
         return menuList;
     }
+
+
 
     /**
      * 查询菜单集合
@@ -93,9 +94,39 @@ public class SysMenuServiceImpl implements ISysMenuService
         {
             menuList = menuMapper.selectMenuAll();
         }
+        else if(SecurityUtils.getSubject().hasRole("system")){
+            menuList = menuMapper.selectMenuAll();
+            systemUserMenuHandle(menuList);
+        }
         else
         {
             menuList = menuMapper.selectMenuAllByUserId(userId);
+        }
+        return menuList;
+    }
+
+    /**
+     * 系统管理员的特殊处理
+     * @param menuList
+     * @return
+     */
+    private List<SysMenu> systemUserMenuHandle(List<SysMenu>  menuList){
+        if(SecurityUtils.getSubject().hasRole("system")){
+            Iterator<SysMenu> iter = menuList.iterator();
+            Map<Long,Long> excludeMap=new HashMap<>();
+            excludeMap.put(1L,0L);
+            excludeMap.put(2L,0L);
+            excludeMap.put(3L,0L);
+            while (iter.hasNext()) {
+                SysMenu item = iter.next();
+                if (excludeMap.get(item.getMenuId())!=null) {
+                    iter.remove();
+                }
+                if(excludeMap.get(item.getParentId())!=null){
+                    excludeMap.put(item.getMenuId(),0L);
+                    iter.remove();
+                }
+            }
         }
         return menuList;
     }

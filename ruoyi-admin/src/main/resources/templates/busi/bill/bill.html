@@ -18,19 +18,15 @@
                                 <label>金额：</label>
                                 <input type="text" name="money"/>
                             </li>
-                            <!--<li>
-                                <label>上一个节点(id)：</label>
-                                <input type="text" name="preId"/>
-                            </li>-->
                             <li>
-                                <label>账单类型：</label>
+                                <label>账单类型：0押金、1损坏赔偿、2丢失赔偿、3超时赔偿：</label>
                                 <select name="billType" th:with="type=${@dict.getType('busi_bill_type')}">
                                     <option value="">所有</option>
                                     <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
                                 </select>
                             </li>
                             <li>
-                                <label>账单标：</label>
+                                <label>账单标识：0-未支付 1-现金 2-支付宝：</label>
                                 <select name="billSign" th:with="type=${@dict.getType('busi_bill_sign')}">
                                     <option value="">所有</option>
                                     <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
@@ -39,6 +35,10 @@
                             <li>
                                 <label>创建时间：</label>
                                 <input type="text" class="time-input" placeholder="请选择创建时间" name="createTime"/>
+                            </li>
+                            <li>
+                                <label>支付时间：</label>
+                                <input type="text" class="time-input" placeholder="请选择支付时间" name="payTime"/>
                             </li>
                             <li>
                                 <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
@@ -104,20 +104,16 @@
                     field: 'money',
                     title: '金额'
                 },
-              /*  {
-                    field: 'preId',
-                    title: '上一个节点(id)'
-                },*/
                 {
                     field: 'billType',
-                    title: '账单类型',
+                    title: '账单类型：0押金、1损坏赔偿、2丢失赔偿、3超时赔偿',
                     formatter: function(value, row, index) {
                        return $.table.selectDictLabel(billTypeDatas, value);
                     }
                 },
                 {
                     field: 'billSign',
-                    title: '账单标识',
+                    title: '账单标识：0-未支付 1-现金 2-支付宝',
                     formatter: function(value, row, index) {
                        return $.table.selectDictLabel(billSignDatas, value);
                     }
@@ -125,6 +121,10 @@
                 {
                     field: 'createTime',
                     title: '创建时间'
+                },
+                {
+                    field: 'payTime',
+                    title: '支付时间'
                 },
                 {
                     field: 'remark',

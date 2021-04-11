@@ -2,6 +2,9 @@ package com.ruoyi.system.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ruoyi.common.utils.ShiroUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +67,38 @@ public class SysUserServiceImpl implements ISysUserService
     @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysUser> selectUserList(SysUser user)
     {
-        return userMapper.selectUserList(user);
+        return security(userMapper.selectUserList(user));
     }
 
+    public List<SysUser> security(List<SysUser> sysUsers){
+        if(sysUsers==null){
+            return sysUsers;
+        }
+
+        if(!hasRole("admin")){
+            for(SysUser sysUser:sysUsers){
+                if(sysUser.isAdmin()){
+                    sysUsers.remove(sysUser);
+                    break;
+                }
+            }
+        }
+
+
+        /*if(!hasRole("admin")){
+            for(SysUser sysUser:sysUsers){
+                if(sysUser.isAdmin()){
+                    sysUsers.remove(sysUser);
+                    break;
+                }
+            }
+        }*/
+        return sysUsers;
+    }
+
+    private boolean hasRole(String roleName){
+        return SecurityUtils.getSubject().hasRole(roleName);
+    }
     /**
      * 根据条件分页查询已分配用户角色列表
      * 
@@ -183,7 +215,12 @@ public class SysUserServiceImpl implements ISysUserService
         for (Long userId : userIds)
         {
             checkUserAllowed(new SysUser(userId));
+            if(ShiroUtils.getUserId()==userId){
+                throw new BusinessException("不允许操删除自己");
+            }
         }
+
+
         // 删除用户与角色关联
         userRoleMapper.deleteUserRole(userIds);
         // 删除用户与岗位关联
@@ -208,6 +245,9 @@ public class SysUserServiceImpl implements ISysUserService
         insertUserPost(user);
 
         // 新增用户与角色管理
+        if(user.getRoleIds()==null||user.getRoleIds().length==0){
+            user.setRoleIds(new Long[]{3L});
+        }
         insertUserRole(user.getUserId(), user.getRoleIds());
         return rows;
     }
@@ -237,16 +277,21 @@ public class SysUserServiceImpl implements ISysUserService
     public int updateUser(SysUser user)
     {
         Long userId = user.getUserId();
-        // 删除用户与角色关联
-        userRoleMapper.deleteUserRoleByUserId(userId);
-        // 新增用户与角色管理
-        insertUserRole(user.getUserId(), user.getRoleIds());
+
+        if(SecurityUtils.getSubject().isPermitted("system:user:role")){
+            // 删除用户与角色关联
+            userRoleMapper.deleteUserRoleByUserId(userId);
+            // 新增用户与角色管理
+            insertUserRole(user.getUserId(), user.getRoleIds());
+        }
         // 删除用户与岗位关联
         userPostMapper.deleteUserPostByUserId(userId);
         // 新增用户与岗位管理
         insertUserPost(user);
         return userMapper.updateUser(user);
     }
+
+
 
     /**
      * 修改用户个人详细信息
@@ -401,7 +446,27 @@ public class SysUserServiceImpl implements ISysUserService
         {
             throw new BusinessException("不允许操作超级管理员用户");
         }
+        if(SecurityUtils.getSubject().hasRole("admin")){
+            return;
+        }
+        List<SysRole> sysRoles = roleMapper.selectRolesByUserId(user.getUserId());
+        SysUser sysUser = new SysUser();
+        sysUser.setRoles(sysRoles);
+        if(ShiroUtils.getUserId()==user.getUserId()){
+            return;
+        }
+        if(sysUser.hasRole("system")){
+            throw new BusinessException("不允许操作系统管理员用户");
+        }
+        if(SecurityUtils.getSubject().hasRole("system")){
+            return;
+        }
+        if(sysUser.hasRole("manager")){
+            throw new BusinessException("不允许操作图书管理员用户");
+        }
     }
+
+
 
     /**
      * 查询用户所属角色组

@@ -11,6 +11,10 @@
                     <div class="select-list">
                         <ul>
                             <li>
+                                <label>图书编号：</label>
+                                <input type="text" name="id"/>
+                            </li>
+                            <li>
                                 <label>图书名称：</label>
                                 <input type="text" name="name"/>
                             </li>
@@ -25,10 +29,10 @@
                                     <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
                                 </select>
                             </li>
-                            <li>
+                            <!--<li>
                                 <label>ISBN：</label>
                                 <input type="text" name="ISBN"/>
-                            </li>
+                            </li>-->
                             <!--<li>
                                 <label>出版社：</label>
                                 <input type="text" name="publisher"/>
@@ -82,7 +86,7 @@
                 {
                     field: 'id',
                     title: '图书编号',
-                    visible: false
+                    visible: true
                 },
                 {
                     field: 'name',
@@ -99,10 +103,10 @@
                        return $.table.selectDictLabel(bookTypeDatas, value);
                     }
                 },
-                {
+                /*{
                     field: 'ISBN',
                     title: 'ISBN编号'
-                },
+                },*/
                 {
                     field: 'publisher',
                     title: '出版社'

@@ -31,9 +31,9 @@ public interface IBusiBillService
      * 新增账单管理
      * 
      * @param busiBill 账单管理
-     * @return 结果
+     * @return id
      */
-    public int insertBusiBill(BusiBill busiBill);
+    public Long insertBusiBill(BusiBill busiBill);
 
     /**
      * 修改账单管理

@@ -11,6 +11,10 @@
                     <div class="select-list">
                         <ul>
                             <li>
+                                <label>图书编号：</label>
+                                <input type="text" name="id"/>
+                            </li>
+                            <li>
                                 <label>图书名称：</label>
                                 <input type="text" name="name"/>
                             </li>
@@ -25,10 +29,7 @@
                                     <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
                                 </select>
                             </li>
-                            <li>
-                                <label>ISBN：</label>
-                                <input type="text" name="ISBN"/>
-                            </li>
+
                             <!--<li>
                                 <label>出版社：</label>
                                 <input type="text" name="publisher"/>
@@ -51,15 +52,15 @@
                 <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="busi:bookbaseinfo:add">
                     <i class="fa fa-plus"></i> 添加
                 </a>
-                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="busi:bookbaseinfo:edit">
+               <!-- <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="busi:bookbaseinfo:edit">
                     <i class="fa fa-edit"></i> 修改
-                </a>
+                </a>-->
                 <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="busi:bookbaseinfo:remove">
                     <i class="fa fa-remove"></i> 删除
                 </a>
-                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="busi:bookbaseinfo:export">
+                <!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="busi:bookbaseinfo:export">
                     <i class="fa fa-download"></i> 导出
-                </a>
+                </a>-->
             </div>
             <div class="col-sm-12 select-table table-striped">
                 <table id="bootstrap-table"></table>
@@ -93,7 +94,7 @@
                 {
                     field: 'id',
                     title: '图书编号',
-                    visible: false
+                    visible: true
                 },
                 {
                     field: 'name',
@@ -110,10 +111,10 @@
                        return $.table.selectDictLabel(bookTypeDatas, value);
                     }
                 },
-                {
+                /*{
                     field: 'ISBN',
                     title: 'ISBN编号'
-                },
+                },*/
                 {
                     field: 'publisher',
                     title: '出版社'

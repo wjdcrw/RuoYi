@@ -66,6 +66,13 @@ public interface SysMenuMapper
     public List<SysMenu> selectMenuList(SysMenu menu);
 
     /**
+     * system用户的特殊处理
+     * @param menu
+     * @return
+     */
+    public List<SysMenu> selectMenuListSystem(SysMenu menu);
+
+    /**
      * 查询系统菜单列表
      * 
      * @param menu 菜单信息

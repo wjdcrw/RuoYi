@@ -35,6 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="selectRoleList" parameterType="SysRole" resultMap="SysRoleResult">
 		<include refid="selectRoleContactVo"/>
+
 		where r.del_flag = '0'
 		<if test="roleName != null and roleName != ''">
 			AND r.role_name like concat('%', #{roleName}, '%')

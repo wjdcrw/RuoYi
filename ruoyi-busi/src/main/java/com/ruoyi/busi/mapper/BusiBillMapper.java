@@ -33,7 +33,7 @@ public interface BusiBillMapper
      * @param busiBill 账单管理
      * @return 结果
      */
-    public int insertBusiBill(BusiBill busiBill);
+    public Long insertBusiBill(BusiBill busiBill);
 
     /**
      * 修改账单管理

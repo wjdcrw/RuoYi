@@ -23,7 +23,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * 账单管理Controller
  * 
  * @author ruoyi
- * @date 2021-03-29
+ * @date 2021-04-11
  */
 @Controller
 @RequestMapping("/busi/bill")
@@ -86,7 +86,7 @@ public class BusiBillController extends BaseController
     @ResponseBody
     public AjaxResult addSave(BusiBill busiBill)
     {
-        return toAjax(busiBillService.insertBusiBill(busiBill));
+        return toAjax(busiBillService.insertBusiBill(busiBill).intValue());
     }
 
     /**

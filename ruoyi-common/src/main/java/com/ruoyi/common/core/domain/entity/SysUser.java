@@ -3,6 +3,8 @@ package com.ruoyi.common.core.domain.entity;
 import java.util.Date;
 import java.util.List;
 import javax.validation.constraints.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -351,6 +353,17 @@ public class SysUser extends BaseEntity
         this.postIds = postIds;
     }
 
+    public boolean hasRole(String roleName){
+        if(roles==null){
+            return false;
+        }
+        for(SysRole sysRole:roles){
+            if(StringUtils.equals(sysRole.getRoleKey(),roleName)){
+                return true;
+            }
+        }
+        return false;
+    }
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

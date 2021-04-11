@@ -9,16 +9,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="userId"    column="userId"    />
         <result property="bookId"    column="bookId"    />
         <result property="money"    column="money"    />
-        <result property="preId"    column="preId"    />
         <result property="billType"    column="billType"    />
         <result property="billSign"    column="billSign"    />
         <result property="createTime"    column="createTime"    />
+        <result property="payTime"    column="payTime"    />
         <result property="remark"    column="remark"    />
-        <result property="parentId"    column="parentId"    />
     </resultMap>
 
     <sql id="selectBusiBillVo">
-        select id, userId, bookId, money, preId, billType, billSign, createTime, remark, parentId from busi_bill
+        select id, userId, bookId, money, billType, billSign, createTime, payTime, remark from busi_bill
     </sql>
 
     <select id="selectBusiBillList" parameterType="BusiBill" resultMap="BusiBillResult">
@@ -26,10 +25,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>  
             <if test="bookId != null "> and bookId = #{bookId}</if>
             <if test="money != null "> and money = #{money}</if>
-            <if test="preId != null "> and preId = #{preId}</if>
             <if test="billType != null "> and billType = #{billType}</if>
             <if test="billSign != null "> and billSign = #{billSign}</if>
             <if test="createTime != null "> and createTime = #{createTime}</if>
+            <if test="payTime != null "> and payTime = #{payTime}</if>
         </where>
     </select>
     
@@ -39,28 +38,29 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
         
     <insert id="insertBusiBill" parameterType="BusiBill" useGeneratedKeys="true" keyProperty="id">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            select LAST_INSERT_ID()
+        </selectKey>
         insert into busi_bill
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">userId,</if>
             <if test="bookId != null">bookId,</if>
             <if test="money != null">money,</if>
-            <if test="preId != null">preId,</if>
             <if test="billType != null">billType,</if>
             <if test="billSign != null">billSign,</if>
             <if test="createTime != null">createTime,</if>
+            <if test="payTime != null">payTime,</if>
             <if test="remark != null">remark,</if>
-            <if test="parentId != null">parentId,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="bookId != null">#{bookId},</if>
             <if test="money != null">#{money},</if>
-            <if test="preId != null">#{preId},</if>
             <if test="billType != null">#{billType},</if>
             <if test="billSign != null">#{billSign},</if>
             <if test="createTime != null">#{createTime},</if>
+            <if test="payTime != null">#{payTime},</if>
             <if test="remark != null">#{remark},</if>
-            <if test="parentId != null">#{parentId},</if>
          </trim>
     </insert>
 
@@ -70,12 +70,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">userId = #{userId},</if>
             <if test="bookId != null">bookId = #{bookId},</if>
             <if test="money != null">money = #{money},</if>
-            <if test="preId != null">preId = #{preId},</if>
             <if test="billType != null">billType = #{billType},</if>
             <if test="billSign != null">billSign = #{billSign},</if>
             <if test="createTime != null">createTime = #{createTime},</if>
+            <if test="payTime != null">payTime = #{payTime},</if>
             <if test="remark != null">remark = #{remark},</if>
-            <if test="parentId != null">parentId = #{parentId},</if>
         </trim>
         where id = #{id}
     </update>

@@ -21,6 +21,7 @@ public class AjaxResult extends HashMap<String, Object>
     /** 数据对象 */
     public static final String DATA_TAG = "data";
 
+
     /**
      * 状态类型
      */
