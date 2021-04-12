@@ -135,3 +135,12 @@ xss:
 swagger:
   # 是否开启swagger
   enabled: true
+
+trade:
+  zhifu:
+    qrcode:
+      aliPayPath: /alipay
+      weChatPath: /wechat
+      storePath: D:/temp/qr-code
+      httpBasePath: /static/qrcode
+      paySuccessCallBack: http://wjdcrw.natapp1.cc/busi/bill/paySuccess

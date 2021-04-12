@@ -12,8 +12,8 @@ public interface TradeService {
 
     /**
      * 根据订单生成支付二维码
-     * @param orderId
-     * @param payType
+     * @param
+     * @param
      * @return
      */
     AjaxResult tradeQrCode(BusiBill busiBill);
@@ -24,4 +24,6 @@ public interface TradeService {
      * @return
      */
     AjaxResult tradeStatusQuery(Long orderId, Integer payType);
+
+    public AjaxResult test_trade_refund(BusiBill busiBill) ;
 }

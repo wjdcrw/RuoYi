@@ -37,7 +37,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </select>
         
-    <insert id="insertBusiBill" parameterType="BusiBill" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertBusiBill" parameterType="BusiBill"  useGeneratedKeys="true" keyProperty="id">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             select LAST_INSERT_ID()
         </selectKey>

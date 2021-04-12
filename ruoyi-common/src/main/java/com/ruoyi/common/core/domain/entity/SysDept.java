@@ -46,6 +46,10 @@ public class SysDept extends BaseEntity
 
     /** 父部门名称 */
     private String parentName;
+    /**
+     * 与表无关，特殊场景下使用
+     */
+    private boolean select;
 
     public Long getDeptId()
     {
@@ -161,6 +165,14 @@ public class SysDept extends BaseEntity
     public void setParentName(String parentName)
     {
         this.parentName = parentName;
+    }
+
+    public boolean isSelect() {
+        return select;
+    }
+
+    public void setSelect(boolean select) {
+        this.select = select;
     }
 
     @Override

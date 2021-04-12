@@ -37,6 +37,7 @@ public class ResourcesConfig implements WebMvcConfigurer
         registry.addViewController("/").setViewName("forward:" + indexUrl);
     }
 
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry)
     {
@@ -54,6 +55,6 @@ public class ResourcesConfig implements WebMvcConfigurer
     @Override
     public void addInterceptors(InterceptorRegistry registry)
     {
-        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+        registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**").excludePathPatterns("/busi/bill/paySuccess");
     }
 }

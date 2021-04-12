@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('支付二维码')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <div id="msg"></div>
+    <img src="" id="qrCode">
+</div>
+<th:block th:include="include :: footer" />
+<th:block th:include="include :: datetimepicker-js" />
+<script th:inline="javascript">
+    var url = ctx + "busi/bill/payDepositQrCode"
+    var config = {
+        url: url,
+        type: "post",
+        dataType: "json",
+        data: {},
+        success: function(result) {
+            if (result.code == web_status.SUCCESS) {
+                $("#qrCode").attr("src",result.msg);
+            }else {
+                // $.operate.successCallback(result);
+                $("#qrCode").attr("msg",result.msg);
+            }
+        }
+    };
+    $.ajax(config);
+</script>
+</body>
+</html>

@@ -161,8 +161,12 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
     public AjaxResult returnBook(BusiBookBorrow busiBookBorrow){
         //查询借阅信息
         busiBookBorrow = busiBookBorrowMapper.selectBusiBookBorrowById(busiBookBorrow.getId());
+
         //查询图书信息
         BusiBookBaseinfo busiBookBaseinfo=busiBookBaseinfoMapper.selectBusiBookBaseinfoById(busiBookBorrow.getBookId());
+        if(!busiBookBaseinfo.getDeptId().equals(ShiroUtils.getSysUser().getDeptId())){
+            return AjaxResult.error("您不可以归还其他部门的图书！！！");
+        }
         //更新图书信息状态
         busiBookBaseinfo.setState(BusiBookBaseinfo.StateType.FREE.value());
         busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);

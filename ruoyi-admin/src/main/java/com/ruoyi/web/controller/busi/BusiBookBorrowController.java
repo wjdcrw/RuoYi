@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
 import com.ruoyi.busi.service.IBusiBookBaseinfoService;
+import com.ruoyi.common.utils.ShiroUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -55,6 +56,17 @@ public class BusiBookBorrowController extends BaseController
         busiBookBorrow.setBookName(busiBookBaseinfo.getName());
         mmap.put("busiBookBorrow", busiBookBorrow);
         return prefix + "/borrowAdd";
+    }
+
+    @RequiresPermissions("busi:borrow:add")
+    @GetMapping("/checkDept/{bookId}")
+    @ResponseBody
+    public AjaxResult checkBorrowBookDept(@PathVariable("bookId") Long bookId){
+        BusiBookBaseinfo busiBookBaseinfo = busiBookBaseinfoService.selectBusiBookBaseinfoById(bookId);
+        if(busiBookBaseinfo.getDeptId().equals(ShiroUtils.getSysUser().getDeptId())){
+            return AjaxResult.success();
+        }
+        return AjaxResult.error("您不可以操作其他部门的图书！！！");
     }
 
     /**

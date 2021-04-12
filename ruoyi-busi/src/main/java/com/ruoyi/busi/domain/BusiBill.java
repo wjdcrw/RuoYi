@@ -56,6 +56,11 @@ public class BusiBill extends BaseEntity
     @Excel(name = "支付时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date payTime;
 
+    /**
+     * 操作者
+     */
+    private Long operator;
+
     public void setId(Long id) 
     {
         this.id = id;
@@ -145,6 +150,14 @@ public class BusiBill extends BaseEntity
     public BusiBill setBookName(String bookName) {
         this.bookName = bookName;
         return this;
+    }
+
+    public Long getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Long operator) {
+        this.operator = operator;
     }
 
     @Override

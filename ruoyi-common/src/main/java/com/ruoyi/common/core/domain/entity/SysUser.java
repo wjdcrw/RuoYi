@@ -87,6 +87,11 @@ public class SysUser extends BaseEntity
     /** 密码最后更新时间 */
     private Date pwdUpdateDate;
 
+    /**
+     * 是否缴纳押金
+     */
+    private int deposit;
+
     /** 部门对象 */
     @Excels({
         @Excel(name = "部门名称", targetAttr = "deptName", type = Type.EXPORT),
@@ -105,6 +110,15 @@ public class SysUser extends BaseEntity
     public SysUser()
     {
 
+    }
+
+    public int getDeposit() {
+        return deposit;
+    }
+
+    public SysUser setDeposit(int deposit) {
+        this.deposit = deposit;
+        return this;
     }
 
     public SysUser(Long userId)

@@ -10,8 +10,10 @@ import com.ruoyi.busi.component.alipay.model.ExtendParams;
 import com.ruoyi.busi.component.alipay.model.GoodsDetail;
 import com.ruoyi.busi.component.alipay.model.builder.AlipayTradePrecreateRequestBuilder;
 import com.ruoyi.busi.component.alipay.model.builder.AlipayTradeQueryRequestBuilder;
+import com.ruoyi.busi.component.alipay.model.builder.AlipayTradeRefundRequestBuilder;
 import com.ruoyi.busi.component.alipay.model.result.AlipayF2FPrecreateResult;
 import com.ruoyi.busi.component.alipay.model.result.AlipayF2FQueryResult;
+import com.ruoyi.busi.component.alipay.model.result.AlipayF2FRefundResult;
 import com.ruoyi.busi.component.alipay.service.AlipayTradeService;
 import com.ruoyi.busi.component.alipay.service.impl.AlipayTradeServiceImpl;
 import com.ruoyi.busi.component.alipay.utils.Utils;
@@ -27,6 +29,7 @@ import com.tuling.tulingmall.model.OmsOrderItem;*/
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.ShiroUtils;
+import com.ruoyi.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hpsf.Decimal;
@@ -36,9 +39,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author ：dcr
@@ -47,7 +53,7 @@ import java.util.List;
 @Slf4j
 @Service
 public class TradeServiceImpl implements TradeService {
-
+    private AtomicInteger atomicInteger=new AtomicInteger();
     @Autowired
     private TradePayProp tradePayProp;
 
@@ -57,6 +63,8 @@ public class TradeServiceImpl implements TradeService {
 
     @Autowired
     private IBusiBillService busiBillService;
+    @Autowired
+    private ISysUserService sysUserService;
 
     static {
         /**
@@ -84,8 +92,7 @@ public class TradeServiceImpl implements TradeService {
     @Override
     public AjaxResult tradeQrCode(BusiBill busiBill) {
         try {
-            Long billId = busiBillService.insertBusiBill(busiBill);
-            busiBill.setId(billId);
+            busiBillService.insertBusiBill(busiBill);
 //            busiBill = busiBillService.selectBusiBillById(billId);
             String path = aliPayQrCode(busiBill);
             return AjaxResult.success(path);
@@ -256,18 +263,19 @@ public class TradeServiceImpl implements TradeService {
                 .setUndiscountableAmount(undiscountableAmount)
                 .setOperatorId(operatorId).setStoreId(storeId).setExtendParams(extendParams)
                 .setTimeoutExpress(timeoutExpress)
-                .setNotifyUrl(tradePayProp.getPaySuccessCallBack()+"/1")//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置
+                .setNotifyUrl(tradePayProp.getPaySuccessCallBack())//支付宝服务器主动通知商户服务器里指定的页面http路径,根据需要设置 1代表支付宝支付
                 .setGoodsDetailList(goodsDetailList);
         log.info("alipay callback url:--->"+builder.getNotifyUrl());
         AlipayF2FPrecreateResult result = tradeService.tradePrecreate(builder);
         switch (result.getTradeStatus()) {
             case SUCCESS:
-                log.info("支付宝预下单成功: )");
+                log.info("支付宝预下单成功: ");
                 AlipayTradePrecreateResponse response = result.getResponse();
                 dumpResponse(response);
                 // 需要修改为运行机器上的路径
                 String filePath = String.format(tradePayProp.getAliPayPath() + "/qr-%s.png",
-                        response.getOutTradeNo());
+                        Timestamp.valueOf(LocalDateTime.now()).getTime()+
+                                atomicInteger.getAndDecrement()+response.getOutTradeNo());
                 log.info("filePath:" + tradePayProp.getStorePath()+ filePath);
                 //写到图片当中
                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, tradePayProp.getStorePath()+filePath);
@@ -283,6 +291,53 @@ public class TradeServiceImpl implements TradeService {
                 break;
         }
         return null;
+    }
+
+    /**
+     * 退押金
+     * @param busiBill
+     * @return
+     */
+    public AjaxResult test_trade_refund(BusiBill busiBill) {
+        // (必填) 外部订单号，需要退款交易的商户外部订单号
+        String outTradeNo = busiBill.getId().toString();
+
+        // (必填) 退款金额，该金额必须小于等于订单的支付金额，单位为元
+        String refundAmount = busiBill.getMoney().toString();
+
+        // (可选，需要支持重复退货时必填) 商户退款请求号，相同支付宝交易号下的不同退款请求号对应同一笔交易的不同退款申请，
+        // 对于相同支付宝交易号下多笔相同商户退款请求号的退款交易，支付宝只会进行一次退款
+        String outRequestNo = "";
+
+        // (必填) 退款原因，可以说明用户退款原因，方便为商家后台提供统计
+        String refundReason = "押金退款";
+
+        // (必填) 商户门店编号，退款情况下可以为商家后台提供退款权限判定和统计等作用，详询支付宝技术支持
+        String storeId = "bookstore";
+
+        // 创建退款请求builder，设置请求参数
+        AlipayTradeRefundRequestBuilder builder = new AlipayTradeRefundRequestBuilder()
+                .setOutTradeNo(outTradeNo).setRefundAmount(refundAmount).setRefundReason(refundReason)
+                .setOutRequestNo(outRequestNo).setStoreId(storeId);
+
+        AlipayF2FRefundResult result = tradeService.tradeRefund(builder);
+        switch (result.getTradeStatus()) {
+            case SUCCESS:
+                log.info("支付宝退款成功");
+
+                return AjaxResult.success("支付宝退款成功 ");
+            case FAILED:
+                log.error("支付宝退款失败!!!");
+                return AjaxResult.error("支付宝退款失败!!!");
+
+            case UNKNOWN:
+                log.error("系统异常，订单退款状态未知!!!");
+                return AjaxResult.error("系统异常，订单退款状态未知!!!");
+
+            default:
+                log.error("不支持的交易状态，交易返回异常!!!");
+                return AjaxResult.error("不支持的交易状态，交易返回异常!!!");
+        }
     }
 
     // 简单打印应答

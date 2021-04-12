@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.entity.SysDictData;
 import com.ruoyi.common.core.domain.entity.SysDictType;
 import com.ruoyi.common.core.redis.RedisCache;
 import com.ruoyi.common.utils.DictUtils;
+import com.ruoyi.common.utils.ShiroUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,9 @@ public class SysDeptServiceImpl implements ISysDeptService
         return deptMapper.selectDeptList(dept);
     }
 
+    @Override
     public List<SysDept> selectDeptChildenList(String deptId){
+
         List<SysDept> sysDepts = deptMapper.selectChildrenDeptById(Long.parseLong(deptId));
         return sysDepts;
     }

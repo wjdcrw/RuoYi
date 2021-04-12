@@ -1,6 +1,10 @@
 package com.ruoyi.web.controller.busi;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.utils.ShiroUtils;
+import com.ruoyi.system.service.ISysDeptService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -25,7 +29,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  * @author ruoyi
  * @date 2021-03-19
  */
-@Controller
+@Controller("busiBookBaseinfoController")
 @RequestMapping("/busi/bookbaseinfo")
 public class BusiBookBaseinfoController extends BaseController
 {
@@ -33,6 +37,9 @@ public class BusiBookBaseinfoController extends BaseController
 
     @Autowired
     private IBusiBookBaseinfoService busiBookBaseinfoService;
+
+    @Autowired
+    private ISysDeptService sysDeptService;
 
     @RequiresPermissions("busi:bookbaseinfo:view")
     @GetMapping()
@@ -51,13 +58,40 @@ public class BusiBookBaseinfoController extends BaseController
      * 查询图书管理列表
      */
     @RequiresPermissions("busi:bookbaseinfo:list")
+    @PostMapping("/listselect")
+    @ResponseBody
+    public TableDataInfo listselect(BusiBookBaseinfo busiBookBaseinfo)
+    {
+        startPage();
+        List<BusiBookBaseinfo> list = busiBookBaseinfoService.selectBusiBookBaseinfoList(busiBookBaseinfo);
+        return getDataTable(list);
+    }
+
+    @RequiresPermissions("busi:bookbaseinfo:list")
     @PostMapping("/list")
     @ResponseBody
     public TableDataInfo list(BusiBookBaseinfo busiBookBaseinfo)
     {
         startPage();
+        busiBookBaseinfo.setDeptId(ShiroUtils.getSysUser().getDeptId());
         List<BusiBookBaseinfo> list = busiBookBaseinfoService.selectBusiBookBaseinfoList(busiBookBaseinfo);
         return getDataTable(list);
+    }
+
+    /**
+     * 获取图书列表中应显示的部门
+     * @param parentDept
+     * @return
+     */
+    public List<SysDept> getBookListDepts(String parentDept){
+        List<SysDept> sysDepts = sysDeptService.selectDeptChildenList(parentDept);
+        Long currentDeptId = ShiroUtils.getSysUser().getDeptId();
+        for(SysDept sysDept:sysDepts){
+            if(sysDept.getDeptId().equals(currentDeptId)){
+                sysDept.setSelect(true);
+            }
+        }
+        return sysDepts;
     }
 
     /**
