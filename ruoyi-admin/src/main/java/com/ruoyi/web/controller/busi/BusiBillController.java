@@ -12,6 +12,10 @@ import com.alipay.api.internal.util.AlipaySignature;
 import com.google.common.collect.Maps;
 import com.ruoyi.busi.component.alipay.config.Configs;
 import com.ruoyi.busi.component.alipay.service.AlipayTradeService;
+import com.ruoyi.busi.domain.BusiBookBorrow;
+import com.ruoyi.busi.domain.BusiBookPreborrow;
+import com.ruoyi.busi.service.IBusiBookBorrowService;
+import com.ruoyi.busi.service.IBusiBookPreborrowService;
 import com.ruoyi.busi.service.TradeService;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.utils.DateUtils;
@@ -54,6 +58,10 @@ public class BusiBillController extends BaseController
     private IBusiBillService busiBillService;
     @Autowired
     private ISysUserService iSysUserService;
+    @Autowired
+    private IBusiBookPreborrowService busiBookPreborrowService;
+    @Autowired
+    private IBusiBookBorrowService busiBookBorrowService;
 
     @Autowired
     private TradeService tradeService;
@@ -162,8 +170,8 @@ public class BusiBillController extends BaseController
     @PostMapping( "/payDepositQrCode")
     @ResponseBody
     public AjaxResult payDepositQrCode(BusiBill busiBill, ModelMap mmap){
-        SysUser sysUser = ShiroUtils.getSysUser();
-        if(sysUser.getDeposit()==1){
+        SysUser sysUser = iSysUserService.selectUserById(ShiroUtils.getUserId());
+        if(sysUser.getDeposit()>0){
             return AjaxResult.error("已缴纳押金，无需重复缴纳");
         }
         if(busiBill.getUserId()==null){
@@ -224,8 +232,9 @@ public class BusiBillController extends BaseController
 
                 int count= busiBillService.updateBusiBill(busiBill);
                 SysUser sysUser = iSysUserService.selectUserById(busiBill.getUserId());
-                sysUser.setDeposit(1);
+                sysUser.setDeposit(billId);
                 iSysUserService.updateUser(sysUser);
+
                 if(count > 0){
 //                    log.info("支付成功，订单完成支付");
                     out.print("success");
@@ -247,21 +256,56 @@ public class BusiBillController extends BaseController
      * @return
      */
     @Log(title = "退押金", businessType = BusinessType.INSERT)
-    @PostMapping( "/payDepositQrCode")
+    @PostMapping( "/returnDeposit")
     @ResponseBody
     public AjaxResult reDeposit(BusiBill busiBill){
+        SysUser sysUser = iSysUserService.selectUserById(ShiroUtils.getUserId());
+        if(sysUser.getDeposit()==0){
+            return AjaxResult.error("未缴纳押金，无需退款");
+        }
         if(busiBill.getUserId()==null){
             busiBill.setUserId(ShiroUtils.getUserId());
         }
+        if(busiBill.getId()==null){
+            busiBill.setId(sysUser.getDeposit());
+        }
+        BusiBookPreborrow preborrow=new BusiBookPreborrow();
+        preborrow.setUserId(sysUser.getUserId());
+        preborrow.setState(BusiBookPreborrow.StateType.UNFINISH.value());
+        if(busiBookPreborrowService.selectBusiBookPreborrowList(preborrow).size()>0){
+            return AjaxResult.error("请先将预约的图书取消！！！");
+        }
+
+        BusiBookBorrow busiBookBorrow=new BusiBookBorrow();
+        busiBookBorrow.setUserId(sysUser.getUserId());
+        busiBookBorrow.setState(BusiBookBorrow.StateType.UNRETURN.value());
+        if(busiBookBorrowService.selectBusiBookBorrowList(busiBookBorrow).size()>0){
+            return AjaxResult.error("请先归还借阅的图书！！！");
+        }
         AjaxResult ajaxResult = tradeService.test_trade_refund(busiBillService.selectBusiBillById(busiBill.getId()));
-        if(ajaxResult.get(AjaxResult.CODE_TAG).equals(AjaxResult.Type.SUCCESS)){
+
+        /*if(ajaxResult.get(AjaxResult.CODE_TAG).equals(AjaxResult.Type.SUCCESS)){
             busiBill.setMoney(busiBill.getMoney().negate());
             busiBillService.updateBusiBill(busiBill);
             SysUser sysUser = ShiroUtils.getSysUser();
-            sysUser.setDeposit(0);
+            sysUser.setDeposit(0L);
             iSysUserService.updateUser(sysUser);
-        }
-        return tradeService.test_trade_refund(busiBillService.selectBusiBillById(busiBill.getId()));
+        }*/
+        busiBill.setMoney(new BigDecimal(-100));
+        busiBillService.updateBusiBill(busiBill);
+        sysUser.setDeposit(0L);
+        iSysUserService.updateUser(sysUser);
+        return AjaxResult.success("支付宝退款成功");
     }
 
+    @Log(title = "检测是否支付成功", businessType = BusinessType.INSERT)
+    @PostMapping( "/checkPayDepositResult")
+    @ResponseBody
+    public AjaxResult checkPayDepositResult(){
+        if(iSysUserService.alreadyPayDeposit(ShiroUtils.getUserId())){
+            return AjaxResult.success("支付成功");
+        }else {
+            return AjaxResult.error("尚未支付成功");
+        }
+    }
 }

@@ -90,7 +90,7 @@ public class SysUser extends BaseEntity
     /**
      * 是否缴纳押金
      */
-    private int deposit;
+    private Long deposit;
 
     /** 部门对象 */
     @Excels({
@@ -112,11 +112,11 @@ public class SysUser extends BaseEntity
 
     }
 
-    public int getDeposit() {
+    public Long getDeposit() {
         return deposit;
     }
 
-    public SysUser setDeposit(int deposit) {
+    public SysUser setDeposit(Long deposit) {
         this.deposit = deposit;
         return this;
     }
@@ -378,6 +378,10 @@ public class SysUser extends BaseEntity
         }
         return false;
     }
+
+    public boolean alreadyPayDeposit(){
+        return this.getDeposit()>0;
+    };
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

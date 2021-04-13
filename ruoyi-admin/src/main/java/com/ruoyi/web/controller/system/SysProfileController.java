@@ -48,7 +48,9 @@ public class SysProfileController extends BaseController
     @GetMapping()
     public String profile(ModelMap mmap)
     {
-        SysUser user = ShiroUtils.getSysUser();
+//        SysUser user = ShiroUtils.getSysUser();
+        SysUser user=userService.selectUserById(ShiroUtils.getUserId());
+        ShiroUtils.setSysUser(user);
         mmap.put("user", user);
         mmap.put("roleGroup", userService.selectUserRoleGroup(user.getUserId()));
         mmap.put("postGroup", userService.selectUserPostGroup(user.getUserId()));

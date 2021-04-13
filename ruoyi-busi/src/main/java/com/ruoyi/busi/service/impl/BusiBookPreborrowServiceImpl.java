@@ -8,6 +8,7 @@ import com.ruoyi.busi.mapper.BusiBookBaseinfoMapper;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ShiroUtils;
+import com.ruoyi.system.service.ISysUserService;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,8 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
     private BusiBookPreborrowMapper busiBookPreborrowMapper;
     @Autowired
     private BusiBookBaseinfoMapper busiBookBaseinfoMapper;
+    @Autowired
+    private ISysUserService userService;
 
     /**
      * 查询预约查询
@@ -82,7 +85,9 @@ public class BusiBookPreborrowServiceImpl implements IBusiBookPreborrowService
         }
 
         //检查读者当前押金
-
+        if(!userService.alreadyPayDeposit(ShiroUtils.getUserId())){
+            return AjaxResult.error("您尚未缴纳押金，请在个人中心进行缴纳！！！");
+        }
         //图书置为预约状态
         busiBookBaseinfo.setState(BusiBookBaseinfo.StateType.APPOINTMENT.value());
         busiBookBaseinfoMapper.updateBusiBookBaseinfo(busiBookBaseinfo);

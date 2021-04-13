@@ -86,7 +86,13 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
         if(sysUser==null){
             return AjaxResult.error("用户名不存在！！！");
         }
+        //检测是否缴纳押金
+        if(!sysUser.alreadyPayDeposit()){
+            return AjaxResult.error("您尚未缴纳押金！！！");
+        }
+
         busiBookBorrow.setUserId(sysUser.getUserId());
+
         //图书状态为非空闲和预约状态
         if(busiBookBaseinfo.getState()!=BusiBookBaseinfo.StateType.FREE.value()
                 &&busiBookBaseinfo.getState()!=BusiBookBaseinfo.StateType.APPOINTMENT.value()){

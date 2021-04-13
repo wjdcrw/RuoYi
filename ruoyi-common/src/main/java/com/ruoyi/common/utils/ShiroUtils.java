@@ -1,5 +1,6 @@
 package com.ruoyi.common.utils;
 
+import com.ruoyi.common.utils.spring.SpringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.session.Session;
@@ -39,6 +40,7 @@ public class ShiroUtils
         {
             user = new SysUser();
             BeanUtils.copyBeanProp(user, obj);
+//            user = SpringUtils.getBean(ISysUserService)
         }
         return user;
     }

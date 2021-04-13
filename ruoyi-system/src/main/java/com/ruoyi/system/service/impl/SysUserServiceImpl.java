@@ -70,6 +70,12 @@ public class SysUserServiceImpl implements ISysUserService
         return security(userMapper.selectUserList(user));
     }
 
+    @Override
+    public boolean alreadyPayDeposit(Long userId) {
+        SysUser user=userMapper.selectUserById(userId);
+        return user.alreadyPayDeposit();
+    }
+
     public List<SysUser> security(List<SysUser> sysUsers){
         if(sysUsers==null){
             return sysUsers;
@@ -288,6 +294,7 @@ public class SysUserServiceImpl implements ISysUserService
         userPostMapper.deleteUserPostByUserId(userId);
         // 新增用户与岗位管理
         insertUserPost(user);
+
         return userMapper.updateUser(user);
     }
 
