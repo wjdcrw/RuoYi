@@ -174,6 +174,15 @@ public class BusiBillController extends BaseController
         return busiBillService.payDepositQrCode(busiBill);
     }
 
+    @Log(title = "罚金二维码", businessType = BusinessType.INSERT)
+    @PostMapping( "/paypenaltyQrCode")
+    @ResponseBody
+    public AjaxResult paypenaltyQrCode(BusiBill busiBill){
+
+        return busiBillService.payPenaltyQrCode(busiBill);
+    }
+
+
     @ApiOperation("支付成功的回调")
     @ApiImplicitParams({@ApiImplicitParam(name = "payType", value = "支付方式:0->未支付,1->支付宝支付,2->微信支付",
             allowableValues = "1,2", paramType = "query", dataType = "integer")})
@@ -210,11 +219,15 @@ public class BusiBillController extends BaseController
                 Long billId = Long.parseLong(param.get("out_trade_no"));
                 BusiBill busiBill = busiBillService.selectBusiBillById(billId);
                 busiBill.setBillSign(1);
-
+                busiBill.setPayTime(DateUtils.getNowDate());
                 int count= busiBillService.updateBusiBill(busiBill);
-                SysUser sysUser = iSysUserService.selectUserById(busiBill.getUserId());
-                sysUser.setDeposit(billId);
-                iSysUserService.updateUser(sysUser);
+                if(busiBill.getBillType()==0){
+                    SysUser sysUser = iSysUserService.selectUserById(busiBill.getBorrowId());
+                    sysUser.setDeposit(billId);
+                    iSysUserService.updateUser(sysUser);
+                }
+
+
 
                 if(count > 0){
 //                    log.info("支付成功，订单完成支付");
@@ -244,9 +257,9 @@ public class BusiBillController extends BaseController
         if(sysUser.getDeposit()==0){
             return AjaxResult.error("未缴纳押金，无需退款");
         }
-        if(busiBill.getUserId()==null){
-            busiBill.setUserId(ShiroUtils.getUserId());
-        }
+//        if(busiBill.getUserId()==null){
+//            busiBill.setUserId(ShiroUtils.getUserId());
+//        }
         if(busiBill.getId()==null){
             busiBill.setId(sysUser.getDeposit());
         }

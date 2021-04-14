@@ -1,5 +1,6 @@
 package com.ruoyi.busi.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.ruoyi.busi.domain.BusiBookBaseinfo;
@@ -180,6 +181,12 @@ public class BusiBookBorrowServiceImpl implements IBusiBookBorrowService
         busiBookBorrow.setReturnDate(DateUtils.getNowDate());
         busiBookBorrow.setState(BusiBookBorrow.StateType.RETURN.value());
         busiBookBorrowMapper.updateBusiBookBorrow(busiBookBorrow);
+        /*LocalDate localDate=LocalDate.now();
+        localDate.minusDays(busiBookBorrow.getBorrowPeriod()-1);
+
+        if(busiBookBorrow.getReturnDate().){
+
+        }*/
         return AjaxResult.success();
     }
     /**

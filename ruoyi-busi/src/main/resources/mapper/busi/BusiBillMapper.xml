@@ -7,7 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="BusiBill" id="BusiBillResult">
         <result property="id"    column="id"    />
         <result property="userId"    column="userId"    />
-        <result property="bookId"    column="bookId"    />
+        <result property="borrowId"    column="borrowId"    />
         <result property="money"    column="money"    />
         <result property="billType"    column="billType"    />
         <result property="billSign"    column="billSign"    />
@@ -17,14 +17,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBusiBillVo">
-        select id, userId, bookId, money, billType, billSign, createTime, payTime, remark from busi_bill
+        select id, userId,(select login_name from sys_user where user_id=userId) as loginName,(select bf.name from busi_book_baseinfo bf
+        where bf.id=(select bb.bookId   from busi_book_borrow bb where bb.id=borrowId))as bookName,
+         borrowId, money, billType, billSign, createTime, payTime, remark from busi_bill
     </sql>
 
     <select id="selectBusiBillList" parameterType="BusiBill" resultMap="BusiBillResult">
         <include refid="selectBusiBillVo"/>
         <where>
             billType in (1,2,3)
-            <if test="bookId != null "> and bookId = #{bookId}</if>
+            <if test="borrowId != null "> and borrowId = #{borrowId}</if>
             <if test="money != null "> and money = #{money}</if>
             <if test="billType != null "> and billType = #{billType}</if>
             <if test="billSign != null "> and billSign = #{billSign}</if>
@@ -46,7 +48,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into busi_bill
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">userId,</if>
-            <if test="bookId != null">bookId,</if>
+            <if test="borrowId != null">borrowId,</if>
             <if test="money != null">money,</if>
             <if test="billType != null">billType,</if>
             <if test="billSign != null">billSign,</if>
@@ -56,7 +58,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
-            <if test="bookId != null">#{bookId},</if>
+            <if test="borrowId != null">#{borrowId},</if>
             <if test="money != null">#{money},</if>
             <if test="billType != null">#{billType},</if>
             <if test="billSign != null">#{billSign},</if>
@@ -70,7 +72,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update busi_bill
         <trim prefix="SET" suffixOverrides=",">
             <if test="userId != null">userId = #{userId},</if>
-            <if test="bookId != null">bookId = #{bookId},</if>
+            <if test="borrowId != null">borrowId = #{borrowId},</if>
             <if test="money != null">money = #{money},</if>
             <if test="billType != null">billType = #{billType},</if>
             <if test="billSign != null">billSign = #{billSign},</if>

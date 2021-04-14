@@ -33,8 +33,8 @@ public class BusiBill extends BaseEntity
 
 
     /** 图书编码 */
-    @Excel(name = "图书编码")
-    private Long bookId;
+    @Excel(name = "借阅编码")
+    private Long borrowId;
 
     /** 图书名称 */
     private String bookName;
@@ -56,6 +56,7 @@ public class BusiBill extends BaseEntity
     @Excel(name = "支付时间", width = 30, dateFormat = "yyyy-MM-dd")
     private Date payTime;
 
+    private String payMessage;
     /**
      * 操作者
      */
@@ -66,27 +67,36 @@ public class BusiBill extends BaseEntity
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
-    public void setUserId(Long userId) 
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }
 
-    public Long getUserId() 
+    public Long getUserId()
     {
         return userId;
     }
-    public void setBookId(Long bookId) 
+    public void setBorrowId(Long borrowId)
     {
-        this.bookId = bookId;
+        this.borrowId = borrowId;
     }
 
-    public Long getBookId() 
+    public String getPayMessage() {
+        return payMessage;
+    }
+
+    public BusiBill setPayMessage(String payMessage) {
+        this.payMessage = payMessage;
+        return this;
+    }
+
+    public Long getBorrowId()
     {
-        return bookId;
+        return borrowId;
     }
     public void setMoney(BigDecimal money)
     {
@@ -164,9 +174,9 @@ public class BusiBill extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("userId", getUserId())
+//            .append("userId", getUserId())
             .append("userLoginName",getUserLoginName())
-            .append("bookId", getBookId())
+            .append("borrowId", getBorrowId())
             .append("money", getMoney())
             .append("billType", getBillType())
             .append("billSign", getBillSign())

@@ -188,7 +188,7 @@ public class TradeServiceImpl implements TradeService {
         /*OmsOrderItem omsOrderItem = orderDetail.getOrderItemList().get(0);
         String subject = omsOrderItem.getProductBrand() + "品牌"
                 + omsOrderItem.getProductName()+"产品购买扫码消费";*/
-        String subject= "社区图书馆--"+busiBill.getBookName()+"支付";
+        String subject= busiBill.getPayMessage();
         // (必填) 订单总金额，单位为元，不能超过1亿元
         // 如果同时传入了【打折金额】,【不可打折金额】,【订单总金额】三者,则必须满足如下条件:【订单总金额】=【打折金额】+【不可打折金额】
         String totalAmount = busiBill.getMoney().toString();
@@ -235,7 +235,7 @@ public class TradeServiceImpl implements TradeService {
             goodsDetailList.add(goods);
         });*/
         // 创建好一个商品后添加至商品明细列表
-        GoodsDetail goods = GoodsDetail.newInstance(busiBill.getBookId().toString(),
+        GoodsDetail goods = GoodsDetail.newInstance(busiBill.getBorrowId().toString(),
                 busiBill.getBookName(),
                 busiBill.getMoney().multiply(new BigDecimal(100)).longValue(),
                 1

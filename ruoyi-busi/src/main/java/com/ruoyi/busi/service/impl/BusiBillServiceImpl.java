@@ -73,6 +73,9 @@ public class BusiBillServiceImpl implements IBusiBillService
     @Override
     public List<BusiBill> selectBusiBillList(BusiBill busiBill)
     {
+        if(!ShiroUtils.getSysUser().hasRole("manager")){
+            busiBill.setUserId(ShiroUtils.getUserId());
+        }
         return busiBillMapper.selectBusiBillList(busiBill);
     }
 
@@ -170,8 +173,9 @@ public class BusiBillServiceImpl implements IBusiBillService
             busiBill.setUserId(ShiroUtils.getUserId());
         }
         busiBill.setMoney(new BigDecimal(100));
-        busiBill.setBookId(-1L);
+        busiBill.setBorrowId(-1L);
         busiBill.setBookName("押金");
+        busiBill.setPayMessage("社区图书馆缴纳押金100元");
         busiBill.setBillSign(0);
         busiBill.setBillType(0);
         busiBill.setOperator(ShiroUtils.getUserId());
@@ -205,7 +209,7 @@ public class BusiBillServiceImpl implements IBusiBillService
             busiBill.setBillSign(1);
             busiBill.setPayTime(DateUtils.getNowDate());
             int count= updateBusiBill(busiBill);
-            SysUser sysUser = sysUserService.selectUserById(busiBill.getUserId());
+            SysUser sysUser = sysUserService.selectUserById(busiBill.getBorrowId());
             sysUser.setDeposit(billId);
             sysUserService.updateUser(sysUser);
             if(count > 0){
@@ -228,7 +232,21 @@ public class BusiBillServiceImpl implements IBusiBillService
 
     @Override
     public AjaxResult payPenaltyQrCode(BusiBill busiBill) {
-        return null;
+        SysUser sysUser = sysUserService.selectUserById(ShiroUtils.getUserId());
+        busiBill=selectBusiBillById(busiBill.getId());
+        if(busiBill.getBillSign()!=0){
+            return AjaxResult.error("已缴纳押金，无需重复缴纳");
+        }
+        busiBill.setPayMessage("社区图书馆罚金押金"+busiBill.getMoney()+"元");
+        //返回订单号
+//        Long billId = busiBillService.insertBusiBill(busiBill);
+//        busiBill.setId(billId);
+//        busiBill.setUserId();
+        AjaxResult ajaxResult = tradeService.tradeQrCode(busiBill);
+        if(ajaxResult.get(AjaxResult.CODE_TAG)==AjaxResult.Type.SUCCESS){
+
+        }
+        return ajaxResult;
     }
 
     @Override
