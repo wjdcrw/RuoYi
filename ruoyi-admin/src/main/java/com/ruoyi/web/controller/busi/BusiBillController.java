@@ -169,28 +169,9 @@ public class BusiBillController extends BaseController
     @Log(title = "押金二维码", businessType = BusinessType.INSERT)
     @PostMapping( "/payDepositQrCode")
     @ResponseBody
-    public AjaxResult payDepositQrCode(BusiBill busiBill, ModelMap mmap){
-        SysUser sysUser = iSysUserService.selectUserById(ShiroUtils.getUserId());
-        if(sysUser.getDeposit()>0){
-            return AjaxResult.error("已缴纳押金，无需重复缴纳");
-        }
-        if(busiBill.getUserId()==null){
-            busiBill.setUserId(ShiroUtils.getUserId());
-        }
-        busiBill.setMoney(new BigDecimal(100));
-        busiBill.setBookId(-1L);
-        busiBill.setBookName("押金");
-        busiBill.setBillSign(0);
-        busiBill.setBillType(0);
-        busiBill.setCreateTime(DateUtils.getNowDate());
-        busiBill.setOperator(ShiroUtils.getUserId());
-        //返回订单号
-//        Long billId = busiBillService.insertBusiBill(busiBill);
-//        busiBill.setId(billId);
-//        busiBill.setUserId();
-        //插入未支付订单，生成二维码，返回二维码路径
-        AjaxResult ajaxResult = tradeService.tradeQrCode(busiBill);
-        return ajaxResult;
+    public AjaxResult payDepositQrCode(BusiBill busiBill){
+
+        return busiBillService.payDepositQrCode(busiBill);
     }
 
     @ApiOperation("支付成功的回调")
@@ -308,4 +289,6 @@ public class BusiBillController extends BaseController
             return AjaxResult.error("尚未支付成功");
         }
     }
+
+
 }

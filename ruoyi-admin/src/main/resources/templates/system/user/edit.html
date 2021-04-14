@@ -109,6 +109,19 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-sm-6" shiro:hasPermission="system:dept:view">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label">归属部门：</label>
+                        <div class="col-sm-8">
+                            <div class="input-group">
+                                <input name="deptName" onclick="selectDeptTree()" id="treeName" type="text" placeholder="请选择归属部门" class="form-control">
+                                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
                 <!--<div class="col-sm-12" shiro:lacksPermission="system:user:role">
                     <div class="form-group">
                         <label class="col-xs-2 control-label">角色：</label>

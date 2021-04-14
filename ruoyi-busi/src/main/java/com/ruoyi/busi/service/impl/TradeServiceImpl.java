@@ -88,28 +88,13 @@ public class TradeServiceImpl implements TradeService {
      * @param
      * @return
      */
-    @Transactional
     @Override
     public AjaxResult tradeQrCode(BusiBill busiBill) {
         try {
-            busiBillService.insertBusiBill(busiBill);
-//            busiBill = busiBillService.selectBusiBillById(billId);
+//            busiBillService.insertBusiBill(busiBill);
             String path = aliPayQrCode(busiBill);
             return AjaxResult.success(path);
 
-            /*OmsOrderDetail detail = portalOrderDao.getDetail(orderId);
-            if(StringUtils.isEmpty(detail.getQrcode())){
-                String path =  (detail.getPayType() == 1) ? aliPayQrCode(detail) : wechatPayQrCode(detail);
-                OmsOrder omsOrder = new OmsOrder();
-                omsOrder.setId(detail.getId());
-                omsOrder.setMemberId(memberId);
-                omsOrder.setQrcode(path);
-                //把二维码地址插入到订单记录中
-                orderMapper.updateByPrimaryKeySelective(omsOrder);
-                return AjaxResult.success(path);
-            }else{
-                return AjaxResult.success(detail.getQrcode());
-            }*/
         } catch (Exception e) {
             log.error("生成支付二维码异常:{}",e.getMessage(),e.getCause());
             throw new RuntimeException("生成支付二维码异常：请联系管理员！");

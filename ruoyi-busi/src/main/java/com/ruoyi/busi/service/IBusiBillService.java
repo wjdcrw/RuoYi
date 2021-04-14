@@ -1,7 +1,13 @@
 package com.ruoyi.busi.service;
 
 import java.util.List;
+
+import com.alipay.api.AlipayApiException;
 import com.ruoyi.busi.domain.BusiBill;
+import com.ruoyi.common.core.domain.AjaxResult;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * 账单管理Service接口
@@ -58,4 +64,21 @@ public interface IBusiBillService
      * @return 结果
      */
     public int deleteBusiBillById(Long id);
+
+    public AjaxResult payDepositQrCode(BusiBill busiBill);
+    public void payDepositSuccess(HttpServletRequest request,
+                                  HttpServletResponse response) throws AlipayApiException;
+
+    public AjaxResult reDeposit(BusiBill busiBill);
+    /**
+     * 缴纳罚金
+     * @param busiBill
+     * @return
+     */
+    public AjaxResult payPenaltyQrCode(BusiBill busiBill);
+
+    public void payPenaltySuccess(HttpServletRequest request,
+                                  HttpServletResponse response);
+
+    public AjaxResult rePenalty(BusiBill busiBill);
 }

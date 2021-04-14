@@ -22,13 +22,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectBusiBillList" parameterType="BusiBill" resultMap="BusiBillResult">
         <include refid="selectBusiBillVo"/>
-        <where>  
+        <where>
+            billType in (1,2,3)
             <if test="bookId != null "> and bookId = #{bookId}</if>
             <if test="money != null "> and money = #{money}</if>
             <if test="billType != null "> and billType = #{billType}</if>
             <if test="billSign != null "> and billSign = #{billSign}</if>
             <if test="createTime != null "> and createTime = #{createTime}</if>
             <if test="payTime != null "> and payTime = #{payTime}</if>
+             order by billSign asc,createTime desc
         </where>
     </select>
     
