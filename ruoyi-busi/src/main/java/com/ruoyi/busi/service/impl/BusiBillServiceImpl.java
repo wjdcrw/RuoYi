@@ -173,7 +173,7 @@ public class BusiBillServiceImpl implements IBusiBillService
             busiBill.setUserId(ShiroUtils.getUserId());
         }
         busiBill.setMoney(new BigDecimal(100));
-        busiBill.setBorrowId(-1L);
+        busiBill.setBorrowId(sysUser.getUserId());
         busiBill.setBookName("押金");
         busiBill.setPayMessage("社区图书馆缴纳押金100元");
         busiBill.setBillSign(0);

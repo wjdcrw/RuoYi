@@ -221,12 +221,9 @@ public class BusiBillController extends BaseController
                 busiBill.setBillSign(1);
                 busiBill.setPayTime(DateUtils.getNowDate());
                 int count= busiBillService.updateBusiBill(busiBill);
-                if(busiBill.getBillType()==0){
-                    SysUser sysUser = iSysUserService.selectUserById(busiBill.getBorrowId());
-                    sysUser.setDeposit(billId);
-                    iSysUserService.updateUser(sysUser);
-                }
-
+                SysUser sysUser = iSysUserService.selectUserById(busiBill.getUserId());
+                sysUser.setDeposit(billId);
+                iSysUserService.updateUser(sysUser);
 
 
                 if(count > 0){
